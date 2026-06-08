@@ -31,6 +31,17 @@ find "$APP_DIR" -name "Info.plist" | while read -r PLIST_PATH; do
     plutil -replace MinimumOSVersion -string "16.0" "$PLIST_PATH"
 done
 
+# 1.5 Spoof Mach-O LC_BUILD_VERSION using vtool
+echo "Modifying Mach-O binaries using vtool..."
+# iOS platform is 2. minOS 16.0, SDK 26.0
+find "$APP_DIR" -type f -perm +111 | while read -r BIN_PATH; do
+    # Check if it's a Mach-O file
+    if file "$BIN_PATH" | grep -q "Mach-O"; then
+        echo "Running vtool on $BIN_PATH"
+        xcrun vtool -set-build-version 2 16.0 26.0 -replace -output "$BIN_PATH" "$BIN_PATH" || echo "vtool failed on $BIN_PATH"
+    fi
+done
+
 # 2. Re-sign all embedded frameworks FIRST
 echo "Re-signing embedded frameworks..."
 IDENTITY="Apple Distribution: Velat AYDEMİR (NJSJBH25GM)"
