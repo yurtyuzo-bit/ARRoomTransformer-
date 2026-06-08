@@ -1,0 +1,22 @@
+{
+    "name": "ARRoomTransformer",
+    "rootNamespace": "ARRoomTransformer",
+    "references": [
+        "Unity.XR.ARFoundation",
+        "Unity.XR.ARSubsystems",
+        "Unity.XR.CoreUtils",
+        "Unity.InputSystem",
+        "Unity.TextMeshPro",
+        "Unity.RenderPipelines.Universal.Runtime",
+        "Newtonsoft.Json"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

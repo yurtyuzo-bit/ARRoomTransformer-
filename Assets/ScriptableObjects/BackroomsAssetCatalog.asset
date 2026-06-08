@@ -1,0 +1,208 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d3ab29f8b0116549933e65dc1b19916, type: 3}
+  m_Name: BackroomsAssetCatalog
+  m_EditorClassIdentifier: ARRoomTransformer::ARRoomTransformer.AssetCatalog
+  catalogName: New Catalog
+  description: 
+  entries:
+  - assetId: fluorescent_light
+    displayName: Floresan Lamba
+    description: "Klasik Backrooms floresan tavan lambas\u0131. Titreme efekti dahil."
+    thumbnail: {fileID: 0}
+    prefab: {fileID: 6263550977920696122, guid: dbf7d391fd1a3894ea85b818ea152405, type: 3}
+    category: 4
+    tags:
+    - backrooms
+    - light
+    - ceiling
+    - floresan
+    defaultScale: 1
+    uniqueId: 9e023bb7f9c743d18e0962b9ad500dd2
+  - assetId: pipe_3m
+    displayName: Boru (3m)
+    description: "3 metre uzunlu\u011Funda metal boru."
+    thumbnail: {fileID: 0}
+    prefab: {fileID: 6417854445340163805, guid: faf43e4d6cd059e419bdcf08ea068995, type: 3}
+    category: 3
+    tags:
+    - backrooms
+    - pipe
+    - industrial
+    defaultScale: 1
+    uniqueId: e1b2cce9fe42427cacc60118ce3f512c
+  - assetId: pipe_2m
+    displayName: Boru (2m)
+    description: "2 metre uzunlu\u011Funda metal boru."
+    thumbnail: {fileID: 0}
+    prefab: {fileID: 0}
+    category: 3
+    tags:
+    - backrooms
+    - pipe
+    - industrial
+    defaultScale: 1
+    uniqueId: 5a3e26cc255444e39683a9d0a62e6f3e
+  - assetId: pipe_1m
+    displayName: Boru (1m)
+    description: "1 metre uzunlu\u011Funda metal boru."
+    thumbnail: {fileID: 0}
+    prefab: {fileID: 0}
+    category: 3
+    tags:
+    - backrooms
+    - pipe
+    - industrial
+    defaultScale: 1
+    uniqueId: de9ae58cd3074360b7713e3dccea0f47
+  - assetId: door_frame
+    displayName: "Kap\u0131 \xC7er\xE7evesi"
+    description: "Karanl\u0131k bir ge\xE7i\u015Fe a\xE7\u0131lan bo\u015F kap\u0131
+      \xE7er\xE7evesi."
+    thumbnail: {fileID: 0}
+    prefab: {fileID: 8168476706508930978, guid: 52176ccdb45248243882639304915de6, type: 3}
+    category: 3
+    tags:
+    - backrooms
+    - door
+    - frame
+    - exit
+    defaultScale: 1
+    uniqueId: ad64840b134043269ead404bd1bea6e0
+  - assetId: exit_sign
+    displayName: "EXIT Tabelas\u0131"
+    description: "K\u0131rm\u0131z\u0131 LED EXIT \xE7\u0131k\u0131\u015F tabelas\u0131."
+    thumbnail: {fileID: 0}
+    prefab: {fileID: 4721968837249271283, guid: ee3955fb0c4708f43868c3ff36e14c50, type: 3}
+    category: 3
+    tags:
+    - backrooms
+    - sign
+    - exit
+    - emergency
+    defaultScale: 1
+    uniqueId: c18e2be1daa9408a80a2f10504dcd64a
+  - assetId: metal_shelf
+    displayName: Metal Raf
+    description: "4 katl\u0131 end\xFCstriyel metal depo raf\u0131."
+    thumbnail: {fileID: 0}
+    prefab: {fileID: 2228434604573750986, guid: ee8d3d78ef3f15d47b531ea3c2d59d72, type: 3}
+    category: 1
+    tags:
+    - backrooms
+    - shelf
+    - storage
+    - metal
+    defaultScale: 1
+    uniqueId: 81521803d7154eec99c8cb4079d8743d
+  - assetId: office_chair
+    displayName: Ofis Sandalyesi
+    description: Tekerlekli ofis sandalyesi.
+    thumbnail: {fileID: 0}
+    prefab: {fileID: 125390370591908499, guid: fcf4723a461f0584999cbb389a348581, type: 3}
+    category: 1
+    tags:
+    - backrooms
+    - chair
+    - office
+    - seat
+    defaultScale: 1
+    uniqueId: 5991f453e6b744b7b1407390b4ce1859
+  - assetId: table
+    displayName: Masa
+    description: "Ah\u015Fap masa."
+    thumbnail: {fileID: 0}
+    prefab: {fileID: 6278018289413193832, guid: bf3d3827931372044aa4aa958b17470b, type: 3}
+    category: 1
+    tags:
+    - backrooms
+    - table
+    - desk
+    - furniture
+    defaultScale: 1
+    uniqueId: af745aebff784d8b8b609e44d70eb299
+  - assetId: couch
+    displayName: Koltuk
+    description: "Eski tip kuma\u015F koltuk."
+    thumbnail: {fileID: 0}
+    prefab: {fileID: 5944321672110476347, guid: 296c472cbe0b530418bc9153fcd5cdf7, type: 3}
+    category: 1
+    tags:
+    - backrooms
+    - couch
+    - sofa
+    - seat
+    defaultScale: 1
+    uniqueId: b40d2f8df0db471b889030a51bfea9ea
+  - assetId: box_large
+    displayName: "Karton Kutu (B\xFCy\xFCk)"
+    description: "B\xFCy\xFCk karton kargo kutusu."
+    thumbnail: {fileID: 0}
+    prefab: {fileID: 9064646651053040407, guid: 3acae55a1d491d84d972695f4f7c8b60, type: 3}
+    category: 2
+    tags:
+    - backrooms
+    - box
+    - cardboard
+    - storage
+    defaultScale: 1
+    uniqueId: eaaf0ada198c4d3689baf124fab946c8
+  - assetId: box_small
+    displayName: "Karton Kutu (K\xFC\xE7\xFCk)"
+    description: "K\xFC\xE7\xFCk karton kutu."
+    thumbnail: {fileID: 0}
+    prefab: {fileID: 0}
+    category: 2
+    tags:
+    - backrooms
+    - box
+    - cardboard
+    defaultScale: 1
+    uniqueId: 956c53c03a3a4937819b9baf11f8da99
+  - assetId: barrel
+    displayName: Metal Varil
+    description: "Ye\u015Fil metal varil/bidon."
+    thumbnail: {fileID: 0}
+    prefab: {fileID: 4646129304090496722, guid: 81a0c14709a0b79408134fea3bf39618, type: 3}
+    category: 2
+    tags:
+    - backrooms
+    - barrel
+    - industrial
+    - container
+    defaultScale: 1
+    uniqueId: bbf1bc5fbafa4479a8124a45aa9d8c10
+  - assetId: puddle_large
+    displayName: "Su Birikintisi (B\xFCy\xFCk)"
+    description: "Zeminde b\xFCy\xFCk su birikintisi."
+    thumbnail: {fileID: 0}
+    prefab: {fileID: 1297551932201080236, guid: c685326752e870c4a902068b6e7832bc, type: 3}
+    category: 2
+    tags:
+    - backrooms
+    - water
+    - puddle
+    - floor
+    defaultScale: 1
+    uniqueId: d5839d04026d4b7f822dd291bdda7573
+  - assetId: puddle_small
+    displayName: "Su Birikintisi (K\xFC\xE7\xFCk)"
+    description: "Zeminde k\xFC\xE7\xFCk su birikintisi."
+    thumbnail: {fileID: 0}
+    prefab: {fileID: 0}
+    category: 2
+    tags:
+    - backrooms
+    - water
+    - puddle
+    defaultScale: 1
+    uniqueId: 4d24daa7d96a4d908b7c71dbbeb75e0f

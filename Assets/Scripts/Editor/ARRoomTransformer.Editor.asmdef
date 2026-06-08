@@ -1,0 +1,24 @@
+{
+    "name": "ARRoomTransformer.Editor",
+    "rootNamespace": "ARRoomTransformer.Editor",
+    "references": [
+        "ARRoomTransformer",
+        "Unity.XR.ARFoundation",
+        "Unity.XR.ARSubsystems",
+        "Unity.XR.CoreUtils",
+        "Unity.InputSystem",
+        "Unity.TextMeshPro",
+        "Unity.RenderPipelines.Universal.Runtime"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
