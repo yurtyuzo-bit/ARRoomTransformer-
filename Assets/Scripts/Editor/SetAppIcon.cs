@@ -1,5 +1,6 @@
 using UnityEditor;
 using UnityEngine;
+using UnityEditor.Build;
 
 [InitializeOnLoad]
 public class SetAppIcon
@@ -14,19 +15,17 @@ public class SetAppIcon
         Texture2D icon = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Textures/AppIcon.png");
         if (icon != null)
         {
-            Texture2D[] icons = new Texture2D[] { icon, icon, icon, icon, icon, icon, icon, icon, icon, icon, icon, icon, icon, icon, icon, icon, icon, icon, icon, icon, icon };
-            
-            // For iOS specifically
-            var iOSIconKinds = PlayerSettings.GetSupportedIconKindsForPlatform(BuildTargetGroup.iOS);
+            var iosTarget = NamedBuildTarget.iOS;
+            var iOSIconKinds = PlayerSettings.GetSupportedIconKinds(iosTarget);
             foreach (var kind in iOSIconKinds)
             {
-                var sizes = PlayerSettings.GetIconSizesForTargetGroup(BuildTargetGroup.iOS, kind);
+                var sizes = PlayerSettings.GetIconSizes(iosTarget, kind);
                 Texture2D[] kindIcons = new Texture2D[sizes.Length];
                 for (int i = 0; i < sizes.Length; i++)
                 {
                     kindIcons[i] = icon;
                 }
-                PlayerSettings.SetIconsForTargetGroup(BuildTargetGroup.iOS, kindIcons, kind);
+                PlayerSettings.SetIcons(iosTarget, kindIcons, kind);
             }
             
             AssetDatabase.SaveAssets();

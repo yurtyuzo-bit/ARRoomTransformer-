@@ -12,7 +12,7 @@ namespace ARRoomTransformer.Editor
             Debug.Log("iOS Ayarları yapılıyor...");
 
             // Gerekli ARKit ve iOS ayarları
-            PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.iOS, "com.samil.arroomtransformer");
+            PlayerSettings.SetApplicationIdentifier(UnityEditor.Build.NamedBuildTarget.iOS, "com.samil.arroomtransformer");
             PlayerSettings.bundleVersion = "1.0.0";
             PlayerSettings.iOS.buildNumber = "1";
             
@@ -24,7 +24,7 @@ namespace ARRoomTransformer.Editor
             PlayerSettings.iOS.targetOSVersionString = "16.0";
             
             // Mimari ayarları
-            PlayerSettings.SetArchitecture(BuildTargetGroup.iOS, (int)AppleMobileArchitecture.ARM64);
+            PlayerSettings.SetArchitecture(UnityEditor.Build.NamedBuildTarget.iOS, (int)AppleMobileArchitecture.ARM64);
 
             
             // Build klasörünü hazırla
