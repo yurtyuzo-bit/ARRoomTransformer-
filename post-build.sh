@@ -31,11 +31,17 @@ find "$APP_DIR" -name "Info.plist" | while read -r PLIST_PATH; do
     plutil -replace MinimumOSVersion -string "16.0" "$PLIST_PATH"
 done
 
-# 2. Re-sign the app bundle
-echo "Re-signing the app bundle to fix the signature..."
-# The developer identity from the logs
+# 2. Re-sign all embedded frameworks FIRST
+echo "Re-signing embedded frameworks..."
 IDENTITY="Apple Distribution: Velat AYDEMİR (NJSJBH25GM)"
 
+find "$APP_DIR/Frameworks" -name "*.framework" -o -name "*.dylib" | while read -r FRAMEWORK_PATH; do
+    echo "Re-signing: $FRAMEWORK_PATH"
+    codesign --force --sign "$IDENTITY" "$FRAMEWORK_PATH"
+done
+
+# 3. Re-sign the main app bundle
+echo "Re-signing the main app bundle..."
 if [ -s entitlements.plist ]; then
     codesign --force --sign "$IDENTITY" --entitlements entitlements.plist "$APP_DIR"
 else
