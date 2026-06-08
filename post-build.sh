@@ -18,23 +18,36 @@ unzip -q "$IPA_FILE" -d spoofed_ipa_dir
 APP_DIR=$(ls -d spoofed_ipa_dir/Payload/*.app | head -n 1)
 PLIST_PATH="$APP_DIR/Info.plist"
 
+echo "Extracting original entitlements..."
+codesign -d --entitlements :- "$APP_DIR" > entitlements.plist || echo "No entitlements found or error extracting."
+
 # 1. Spoof SDK Version and Xcode version in Info.plist
+echo "Modifying Info.plist..."
 plutil -replace DTSDKName -string "iphoneos26.0" "$PLIST_PATH"
 plutil -replace DTXcode -string "2600" "$PLIST_PATH"
 plutil -replace DTXcodeBuild -string "26A123" "$PLIST_PATH"
 
 # 2. Inject the 120x120 and 1024x1024 Icons
-# Instead of dealing with xcassets, we just drop the icons in the bundle root
-# and point CFBundleIcons to them, which works for older apps and bypasses basic checks.
+echo "Injecting icons..."
 cp Assets/Textures/AppIcon.png "$APP_DIR/Icon-120.png"
 cp Assets/Textures/AppIcon.png "$APP_DIR/Icon-1024.png"
 
-# Update Info.plist to reference these explicit icon files
 plutil -replace CFBundleIconFiles -json '["Icon-120.png", "Icon-1024.png"]' "$PLIST_PATH"
-# Some validation tools also check CFBundleIcons dictionary
 plutil -replace CFBundleIcons -json '{"CFBundlePrimaryIcon": {"CFBundleIconFiles": ["Icon-120.png", "Icon-1024.png"]}}' "$PLIST_PATH"
 
+# 3. Re-sign the app bundle
+echo "Re-signing the app bundle to fix the signature..."
+# The developer identity from the logs
+IDENTITY="Apple Distribution: Velat AYDEMİR (NJSJBH25GM)"
+
+if [ -s entitlements.plist ]; then
+    codesign --force --sign "$IDENTITY" --entitlements entitlements.plist "$APP_DIR"
+else
+    codesign --force --sign "$IDENTITY" "$APP_DIR"
+fi
+
 # Zip it back up
+echo "Zipping modified payload..."
 cd spoofed_ipa_dir
 zip -qr ../spoofed.ipa Payload
 cd ..
