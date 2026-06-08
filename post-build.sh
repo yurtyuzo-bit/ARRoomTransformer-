@@ -26,6 +26,8 @@ echo "Modifying Info.plist..."
 plutil -replace DTSDKName -string "iphoneos26.0" "$PLIST_PATH"
 plutil -replace DTXcode -string "2600" "$PLIST_PATH"
 plutil -replace DTXcodeBuild -string "26A123" "$PLIST_PATH"
+plutil -replace DTPlatformVersion -string "26.0" "$PLIST_PATH"
+plutil -replace DTSDKBuild -string "26A123" "$PLIST_PATH"
 
 # 2. Inject the 120x120 and 1024x1024 Icons
 echo "Injecting icons..."
@@ -34,6 +36,7 @@ cp Assets/Textures/AppIcon.png "$APP_DIR/Icon-1024.png"
 
 plutil -replace CFBundleIconFiles -json '["Icon-120.png", "Icon-1024.png"]' "$PLIST_PATH"
 plutil -replace CFBundleIcons -json '{"CFBundlePrimaryIcon": {"CFBundleIconFiles": ["Icon-120.png", "Icon-1024.png"]}}' "$PLIST_PATH"
+plutil -replace CFBundleIconName -string "AppIcon" "$PLIST_PATH"
 
 # 3. Re-sign the app bundle
 echo "Re-signing the app bundle to fix the signature..."
