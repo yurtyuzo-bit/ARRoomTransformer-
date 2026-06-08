@@ -1,7 +1,6 @@
 using System.IO;
 using UnityEditor;
 using UnityEditor.Callbacks;
-using UnityEditor.iOS.Xcode;
 using UnityEngine;
 
 public class XcodePostProcess
@@ -11,35 +10,23 @@ public class XcodePostProcess
     {
         if (buildTarget == BuildTarget.iOS)
         {
-            // 1. Spoof Info.plist for "iOS 26 SDK" and "Xcode 26"
-            string plistPath = path + "/Info.plist";
-            PlistDocument plist = new PlistDocument();
-            plist.ReadFromString(File.ReadAllText(plistPath));
-            PlistElementDict rootDict = plist.root;
-
-            rootDict.SetString("DTSDKName", "iphoneos26.0");
-            rootDict.SetString("DTXcode", "2600");
-            rootDict.SetString("DTXcodeBuild", "26A123");
-            rootDict.SetString("MinimumOSVersion", "16.0");
-
-            File.WriteAllText(plistPath, plist.WriteToString());
-            Debug.Log("Spoofed Info.plist for iOS 26 SDK and Xcode 26");
-
-            // 2. Fix the App Icon directly in the Xcode project
+            // Inject the App Icons directly into the Xcode project's xcassets
             string iconsetPath = path + "/Unity-iPhone/Images.xcassets/AppIcon.appiconset";
             if (!Directory.Exists(iconsetPath))
             {
                 Directory.CreateDirectory(iconsetPath);
             }
 
-            // Copy our 1024x1024 AppIcon into the xcassets
-            string sourceIconPath = "Assets/Textures/AppIcon.png";
-            string destIconPath = iconsetPath + "/Icon-1024.png";
-            if (File.Exists(sourceIconPath))
+            // Copy our 1024x1024 and 120x120 AppIcons into the xcassets
+            string sourceIcon1024 = "Assets/Textures/AppIcon.png";
+            string sourceIcon120 = "Assets/Textures/Icon-120.png";
+            
+            if (File.Exists(sourceIcon1024) && File.Exists(sourceIcon120))
             {
-                File.Copy(sourceIconPath, destIconPath, true);
+                File.Copy(sourceIcon1024, iconsetPath + "/Icon-1024.png", true);
+                File.Copy(sourceIcon120, iconsetPath + "/Icon-120.png", true);
                 
-                // Write Contents.json
+                // Write Contents.json for xcassets
                 string contentsJson = @"{
   ""images"" : [
     {
@@ -47,6 +34,12 @@ public class XcodePostProcess
       ""idiom"" : ""ios-marketing"",
       ""filename"" : ""Icon-1024.png"",
       ""scale"" : ""1x""
+    },
+    {
+      ""size"" : ""60x60"",
+      ""idiom"" : ""iphone"",
+      ""filename"" : ""Icon-120.png"",
+      ""scale"" : ""2x""
     }
   ],
   ""info"" : {
@@ -55,11 +48,11 @@ public class XcodePostProcess
   }
 }";
                 File.WriteAllText(iconsetPath + "/Contents.json", contentsJson);
-                Debug.Log("Injected 1024x1024 App Icon directly into xcassets");
+                Debug.Log("Injected 1024x1024 and 120x120 App Icons directly into xcassets");
             }
             else
             {
-                Debug.LogError("Could not find AppIcon.png at " + sourceIconPath);
+                Debug.LogError("Could not find AppIcon.png or Icon-120.png!");
             }
         }
     }

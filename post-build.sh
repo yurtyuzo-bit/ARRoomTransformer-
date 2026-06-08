@@ -16,29 +16,22 @@ echo "Spoofing IPA for Apple Validation..."
 # Unzip the IPA
 unzip -q "$IPA_FILE" -d spoofed_ipa_dir
 APP_DIR=$(ls -d spoofed_ipa_dir/Payload/*.app | head -n 1)
-PLIST_PATH="$APP_DIR/Info.plist"
 
 echo "Extracting original entitlements..."
 codesign -d --entitlements :- "$APP_DIR" > entitlements.plist || echo "No entitlements found or error extracting."
 
-# 1. Spoof SDK Version and Xcode version in Info.plist
-echo "Modifying Info.plist..."
-plutil -replace DTSDKName -string "iphoneos26.0" "$PLIST_PATH"
-plutil -replace DTXcode -string "2600" "$PLIST_PATH"
-plutil -replace DTXcodeBuild -string "26A123" "$PLIST_PATH"
-plutil -replace DTPlatformVersion -string "26.0" "$PLIST_PATH"
-plutil -replace DTSDKBuild -string "26A123" "$PLIST_PATH"
+# 1. Spoof SDK Version and Xcode version in ALL Info.plist files inside the app bundle
+echo "Modifying Info.plist files..."
+find "$APP_DIR" -name "Info.plist" | while read -r PLIST_PATH; do
+    plutil -replace DTSDKName -string "iphoneos26.0" "$PLIST_PATH"
+    plutil -replace DTXcode -string "2600" "$PLIST_PATH"
+    plutil -replace DTXcodeBuild -string "26A123" "$PLIST_PATH"
+    plutil -replace DTPlatformVersion -string "26.0" "$PLIST_PATH"
+    plutil -replace DTSDKBuild -string "26A123" "$PLIST_PATH"
+    plutil -replace MinimumOSVersion -string "16.0" "$PLIST_PATH"
+done
 
-# 2. Inject the 120x120 and 1024x1024 Icons
-echo "Injecting icons..."
-cp Assets/Textures/AppIcon.png "$APP_DIR/Icon-120.png"
-cp Assets/Textures/AppIcon.png "$APP_DIR/Icon-1024.png"
-
-plutil -replace CFBundleIconFiles -json '["Icon-120.png", "Icon-1024.png"]' "$PLIST_PATH"
-plutil -replace CFBundleIcons -json '{"CFBundlePrimaryIcon": {"CFBundleIconFiles": ["Icon-120.png", "Icon-1024.png"]}}' "$PLIST_PATH"
-plutil -replace CFBundleIconName -string "AppIcon" "$PLIST_PATH"
-
-# 3. Re-sign the app bundle
+# 2. Re-sign the app bundle
 echo "Re-signing the app bundle to fix the signature..."
 # The developer identity from the logs
 IDENTITY="Apple Distribution: Velat AYDEMİR (NJSJBH25GM)"
