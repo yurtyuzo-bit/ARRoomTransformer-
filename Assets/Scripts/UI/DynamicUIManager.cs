@@ -197,7 +197,7 @@ namespace ARRoomTransformer
                 tRect.sizeDelta = new Vector2(0, 60);
 
                 // Dummy veriler (AssetCatalog boşsa)
-                string[] names = { "Sandalye", "Masa", "Floresan Lamba", "Varil", "Kutu" };
+                string[] names = { "[TEST] Sandalye", "[TEST] Masa", "[TEST] Lamba", "[TEST] Varil", "[TEST] Kutu" };
                 PrimitiveType[] primTypes = { PrimitiveType.Cube, PrimitiveType.Cylinder, PrimitiveType.Capsule, PrimitiveType.Cylinder, PrimitiveType.Cube };
                 Color[] colors = { Color.cyan, new Color(0.6f, 0.3f, 0f), Color.white, Color.red, new Color(0.8f, 0.6f, 0.2f) };
 
@@ -211,7 +211,18 @@ namespace ARRoomTransformer
                     // --- CANLI DUMMY 3D MODEL OLUŞTUR ---
                     var dummyObj = GameObject.CreatePrimitive(primTypes[i]);
                     dummyObj.name = names[i] + "_Prefab";
-                    dummyObj.GetComponent<MeshRenderer>().material.color = colors[i];
+                    
+                    // URP Uyumlu Materyal
+                    var renderer = dummyObj.GetComponent<MeshRenderer>();
+                    Shader urpShader = Shader.Find("Universal Render Pipeline/Lit");
+                    if (urpShader == null) urpShader = Shader.Find("Standard");
+                    renderer.material = new Material(urpShader);
+                    
+                    if (renderer.material.HasProperty("_BaseColor"))
+                        renderer.material.SetColor("_BaseColor", colors[i]);
+                    else
+                        renderer.material.color = colors[i];
+
                     // Prefab gibi davranması için sahnede gizle
                     dummyObj.SetActive(false);
                     entry.prefab = dummyObj;

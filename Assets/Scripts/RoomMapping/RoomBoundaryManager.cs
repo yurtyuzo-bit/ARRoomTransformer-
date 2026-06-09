@@ -218,9 +218,9 @@ namespace ARRoomTransformer
                 
                 boundaryMaterial = new Material(shader);
                 if (boundaryMaterial.HasProperty("_BaseColor"))
-                    boundaryMaterial.SetColor("_BaseColor", new Color(0.01f, 0.05f, 0.15f, 1.0f)); // URP
+                    boundaryMaterial.SetColor("_BaseColor", new Color(0.0f, 0.8f, 1.0f, 0.6f)); // Açık Turkuaz / Su Rengi
                 else
-                    boundaryMaterial.color = new Color(0.01f, 0.05f, 0.15f, 1.0f); // Standard
+                    boundaryMaterial.color = new Color(0.0f, 0.8f, 1.0f, 0.6f); // Açık Turkuaz
             }
 
             // 1. ZEMİN (Dışarısı)
