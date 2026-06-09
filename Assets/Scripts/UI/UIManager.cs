@@ -46,7 +46,7 @@ namespace ARRoomTransformer
             {
                 if (_instance == null)
                 {
-                    _instance = FindObjectOfType<UIManager>();
+                    _instance = FindAnyObjectByType<UIManager>();
                     if (_instance == null)
                     {
                         Debug.LogError("[UIManager] Sahnede UIManager bulunamadı!");

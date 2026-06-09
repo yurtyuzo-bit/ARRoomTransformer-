@@ -21,9 +21,9 @@ namespace ARRoomTransformer
 
         private void Start()
         {
-            appManager = FindObjectOfType<AppManager>();
-            assetPlacer = FindObjectOfType<AssetPlacer>();
-            videoRecorder = FindObjectOfType<ARVideoRecorder>();
+            appManager = FindAnyObjectByType<AppManager>();
+            assetPlacer = FindAnyObjectByType<AssetPlacer>();
+            videoRecorder = FindAnyObjectByType<ARVideoRecorder>();
             
             EnsureEventSystem();
             BuildUI();
@@ -34,7 +34,7 @@ namespace ARRoomTransformer
 
         private void EnsureEventSystem()
         {
-            if (FindObjectOfType<EventSystem>() == null)
+            if (FindAnyObjectByType<EventSystem>() == null)
             {
                 var eventSystem = new GameObject("EventSystem");
                 eventSystem.AddComponent<EventSystem>();

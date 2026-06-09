@@ -49,7 +49,7 @@ namespace ARRoomTransformer
         {
             if (arOcclusionManager == null)
             {
-                arOcclusionManager = FindFirstObjectByType<AROcclusionManager>();
+                arOcclusionManager = FindAnyObjectByType<AROcclusionManager>();
             }
         }
 

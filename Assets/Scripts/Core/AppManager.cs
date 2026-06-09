@@ -23,7 +23,7 @@ namespace ARRoomTransformer
             {
                 if (_instance == null)
                 {
-                    _instance = FindFirstObjectByType<AppManager>();
+                    _instance = FindAnyObjectByType<AppManager>();
 
                     if (_instance == null)
                     {

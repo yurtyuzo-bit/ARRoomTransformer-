@@ -21,7 +21,7 @@ namespace ARRoomTransformer
 
         private void Awake()
         {
-            arRaycastManager = FindObjectOfType<ARRaycastManager>();
+            arRaycastManager = FindAnyObjectByType<ARRaycastManager>();
         }
 
         private void OnEnable()
@@ -78,7 +78,7 @@ namespace ARRoomTransformer
 #if UNITY_EDITOR
             if (Mouse.current != null) screenCenter = Mouse.current.position.ReadValue();
 #endif
-            var uiManager = FindObjectOfType<DynamicUIManager>();
+            var uiManager = FindAnyObjectByType<DynamicUIManager>();
 
             if (TryGetHit(screenCenter, out Vector3 currentHit))
             {
@@ -151,7 +151,7 @@ namespace ARRoomTransformer
                     GenerateBoundaryMesh();
                     isSetupMode = false;
                     
-                    var appManager = FindObjectOfType<AppManager>();
+                    var appManager = FindAnyObjectByType<AppManager>();
                     if (appManager != null) appManager.SendMessage("OnBoundarySetupComplete", SendMessageOptions.DontRequireReceiver);
                 }
             }

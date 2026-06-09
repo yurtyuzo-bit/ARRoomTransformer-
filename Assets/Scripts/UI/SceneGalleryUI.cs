@@ -34,7 +34,7 @@ namespace ARRoomTransformer
 
         private void Start()
         {
-            _saveLoadManager = FindFirstObjectByType<SaveLoadManager>();
+            _saveLoadManager = FindAnyObjectByType<SaveLoadManager>();
 
             if (closeButton != null)
                 closeButton.onClick.AddListener(() => gameObject.SetActive(false));

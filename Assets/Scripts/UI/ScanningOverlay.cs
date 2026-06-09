@@ -40,7 +40,7 @@ namespace ARRoomTransformer
 
         private void Awake()
         {
-            _raycastManager = FindFirstObjectByType<UnityEngine.XR.ARFoundation.ARRaycastManager>();
+            _raycastManager = FindAnyObjectByType<UnityEngine.XR.ARFoundation.ARRaycastManager>();
 
             if (crosshair != null)
             {

@@ -50,10 +50,10 @@ namespace ARRoomTransformer
         private void Start()
         {
             // Referansları bul
-            _audioManager = FindFirstObjectByType<AudioManager>();
-            _occlusionController = FindFirstObjectByType<OcclusionController>();
-            _materialManager = FindFirstObjectByType<MaterialManager>();
-            _debugUI = FindFirstObjectByType<ARDebugUI>();
+            _audioManager = FindAnyObjectByType<AudioManager>();
+            _occlusionController = FindAnyObjectByType<OcclusionController>();
+            _materialManager = FindAnyObjectByType<MaterialManager>();
+            _debugUI = FindAnyObjectByType<ARDebugUI>();
 
             SetupUI();
             LoadSettings();

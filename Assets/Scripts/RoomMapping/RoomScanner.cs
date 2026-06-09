@@ -189,7 +189,7 @@ namespace ARRoomTransformer
         private void Awake()
         {
             if (_planeManager == null)
-                _planeManager = FindFirstObjectByType<ARPlaneManager>();
+                _planeManager = FindAnyObjectByType<ARPlaneManager>();
 
             if (_planeManager == null)
                 Debug.LogError("[RoomScanner] ARPlaneManager bulunamadı!");
@@ -376,15 +376,12 @@ namespace ARRoomTransformer
         private SurfaceType ClassifyPlane(ARPlane plane)
         {
             // ARKit sınıflandırma bilgisi varsa önce onu kullan
-            switch (plane.classification)
-            {
-                case PlaneClassification.Floor:
-                    return SurfaceType.Floor;
-                case PlaneClassification.Wall:
-                    return SurfaceType.Wall;
-                case PlaneClassification.Ceiling:
-                    return SurfaceType.Ceiling;
-            }
+            if (plane.classifications.HasFlag(PlaneClassifications.Floor))
+                return SurfaceType.Floor;
+            if (plane.classifications.HasFlag(PlaneClassifications.Wall))
+                return SurfaceType.Wall;
+            if (plane.classifications.HasFlag(PlaneClassifications.Ceiling))
+                return SurfaceType.Ceiling;
 
             // Sınıflandırma yoksa, hizalamaya göre karar ver
             switch (plane.alignment)

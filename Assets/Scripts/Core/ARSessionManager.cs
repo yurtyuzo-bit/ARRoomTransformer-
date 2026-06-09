@@ -162,7 +162,7 @@ namespace ARRoomTransformer
 
             // XROrigin otomatik bulma
             if (_xrOrigin == null)
-                _xrOrigin = FindFirstObjectByType<XROrigin>();
+                _xrOrigin = FindAnyObjectByType<XROrigin>();
 
             // Yöneticileri otomatik bulma
             if (_planeManager == null && _xrOrigin != null)

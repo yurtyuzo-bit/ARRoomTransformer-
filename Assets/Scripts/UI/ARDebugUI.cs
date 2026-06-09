@@ -28,9 +28,9 @@ namespace ARRoomTransformer
 
         private void Start()
         {
-            _appManager = FindFirstObjectByType<AppManager>();
-            _planeManager = FindFirstObjectByType<UnityEngine.XR.ARFoundation.ARPlaneManager>();
-            _arSession = FindFirstObjectByType<UnityEngine.XR.ARFoundation.ARSession>();
+            _appManager = FindAnyObjectByType<AppManager>();
+            _planeManager = FindAnyObjectByType<UnityEngine.XR.ARFoundation.ARPlaneManager>();
+            _arSession = FindAnyObjectByType<UnityEngine.XR.ARFoundation.ARSession>();
 
 #if !UNITY_EDITOR
             if (!showInBuild)
