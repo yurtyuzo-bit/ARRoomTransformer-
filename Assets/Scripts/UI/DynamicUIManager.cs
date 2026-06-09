@@ -196,6 +196,29 @@ namespace ARRoomTransformer
                 var tRect = titleObj.GetComponent<RectTransform>();
                 tRect.sizeDelta = new Vector2(0, 60);
 
+                // Dummy veriler (AssetCatalog boşsa)
+                string[] names = { "Sandalye", "Masa", "Floresan Lamba", "Varil", "Kutu" };
+                PrimitiveType[] primTypes = { PrimitiveType.Cube, PrimitiveType.Cylinder, PrimitiveType.Capsule, PrimitiveType.Cylinder, PrimitiveType.Cube };
+                Color[] colors = { Color.cyan, new Color(0.6f, 0.3f, 0f), Color.white, Color.red, new Color(0.8f, 0.6f, 0.2f) };
+
+                for (int i = 0; i < names.Length; i++)
+                {
+                    var entry = new AssetEntry();
+                    entry.displayName = names[i];
+                    entry.id = i.ToString();
+                    entry.defaultScale = 0.3f;
+                    
+                    // --- CANLI DUMMY 3D MODEL OLUŞTUR ---
+                    var dummyObj = GameObject.CreatePrimitive(primTypes[i]);
+                    dummyObj.name = names[i] + "_Prefab";
+                    dummyObj.GetComponent<MeshRenderer>().material.color = colors[i];
+                    // Prefab gibi davranması için sahnede gizle
+                    dummyObj.SetActive(false);
+                    entry.prefab = dummyObj;
+
+                    assetPlacer.Catalog.Entries.Add(entry);
+                }
+
                 for (int i = 0; i < assetPlacer.Catalog.Count; i++)
                 {
                     int index = i;

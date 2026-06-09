@@ -222,6 +222,28 @@ namespace ARRoomTransformer
                     _dragTargetPosition,
                     Time.deltaTime * dragSmoothSpeed);
             }
+
+#if UNITY_EDITOR
+            // TouchSimulation başarısız olursa diye Garanti Fare Tıklama Yakalayıcı
+            if (UnityEngine.InputSystem.Mouse.current != null)
+            {
+                if (UnityEngine.InputSystem.Mouse.current.leftButton.wasPressedThisFrame)
+                {
+                    if (UnityEngine.EventSystems.EventSystem.current != null && UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()) return;
+                    _touchStartPos = UnityEngine.InputSystem.Mouse.current.position.ReadValue();
+                    _hasDragStarted = false;
+                }
+                
+                if (UnityEngine.InputSystem.Mouse.current.leftButton.wasReleasedThisFrame)
+                {
+                    if (UnityEngine.EventSystems.EventSystem.current != null && UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()) return;
+                    if (!_hasDragStarted && IsInPlacementMode)
+                    {
+                        TryPlaceAtScreenPoint(UnityEngine.InputSystem.Mouse.current.position.ReadValue());
+                    }
+                }
+            }
+#endif
         }
 
         #endregion
@@ -252,6 +274,7 @@ namespace ARRoomTransformer
 
             // Instantiate
             GameObject instance = Instantiate(entry.prefab, position, rotation);
+            instance.SetActive(true); // Dummy nesneler gizli olduğu için kopyayı görünür yap
             instance.name = $"Placed_{entry.displayName}_{_placedAssets.Count}";
 
             // Apply default scale
