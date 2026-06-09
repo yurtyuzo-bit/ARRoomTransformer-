@@ -14,7 +14,9 @@ namespace ARRoomTransformer
         [Header("Kayıt Ayarları")]
         [SerializeField] private VideoResolution resolution = VideoResolution.HD_1080p;
         [SerializeField] private int targetFPS = 30;
+#pragma warning disable 0414
         [SerializeField] private bool recordAudio = true;
+#pragma warning restore 0414
         [SerializeField] private int countdownSeconds = 3;
 
         [Header("Events")]

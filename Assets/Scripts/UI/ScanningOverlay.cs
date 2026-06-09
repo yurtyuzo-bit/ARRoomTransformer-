@@ -27,7 +27,9 @@ namespace ARRoomTransformer
         [SerializeField] private string msgDetectingPlanes = "Yüzeyler algılanıyor...";
         [SerializeField] private string msgMarkCorners = "Odanın köşelerini işaretleyin";
         [SerializeField] private string msgTapToMark = "Köşeyi işaretlemek için dokunun";
+#pragma warning disable 0414
         [SerializeField] private string msgMinCorners = "En az 3 köşe işaretleyin";
+#pragma warning restore 0414
         [SerializeField] private string msgConfirm = "Onaylamak için ✓ butonuna basın";
 
         private UnityEngine.XR.ARFoundation.ARRaycastManager _raycastManager;

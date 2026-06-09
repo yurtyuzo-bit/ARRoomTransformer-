@@ -194,9 +194,9 @@ namespace ARRoomTransformer
             hitPoint = cam.transform.position + cam.transform.forward * 3f;
             hitPoint.y = 0; // Çiviyi yere sabitle
             return true;
-#endif
-
+#else
             return false;
+#endif
         }
 
         private void GenerateBoundaryMesh()

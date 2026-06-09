@@ -378,7 +378,7 @@ namespace ARRoomTransformer
             // ARKit sınıflandırma bilgisi varsa önce onu kullan
             if (plane.classifications.HasFlag(PlaneClassifications.Floor))
                 return SurfaceType.Floor;
-            if (plane.classifications.HasFlag(PlaneClassifications.Wall))
+            if (plane.classifications.HasFlag(PlaneClassifications.WallFace))
                 return SurfaceType.Wall;
             if (plane.classifications.HasFlag(PlaneClassifications.Ceiling))
                 return SurfaceType.Ceiling;

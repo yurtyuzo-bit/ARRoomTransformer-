@@ -14,7 +14,9 @@ namespace ARRoomTransformer
         [SerializeField] private GameObject debugPanel;
 
         [Header("Ayarlar")]
+#pragma warning disable 0414
         [SerializeField] private bool showInBuild = false;
+#pragma warning restore 0414
         [SerializeField] private float updateInterval = 0.25f;
         [SerializeField] private KeyCode toggleKey = KeyCode.BackQuote; // ` tuşu
 
