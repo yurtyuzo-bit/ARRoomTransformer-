@@ -121,6 +121,8 @@ namespace ARRoomTransformer
             chText.font = defaultFont;
             chText.fontSize = 70;
             chText.alignment = TextAnchor.MiddleCenter;
+            chText.horizontalOverflow = HorizontalWrapMode.Overflow;
+            chText.verticalOverflow = VerticalWrapMode.Overflow;
             chText.color = new Color(1f, 0.2f, 0.2f, 0.9f); // Neon Kırmızı
             crosshairObj.SetActive(false); // Başlangıçta gizli
 
