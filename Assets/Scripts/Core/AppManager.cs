@@ -221,10 +221,7 @@ namespace ARRoomTransformer
             return true;
         }
 
-        /// <summary>
-        /// Convenience method: transitions to <see cref="AppState.Scanning"/>.
-        /// </summary>
-        public void StartScanning() => TransitionTo(AppState.Scanning);
+
 
         /// <summary>
         /// Convenience method: transitions to <see cref="AppState.Placing"/>.
@@ -313,7 +310,7 @@ namespace ARRoomTransformer
         /// <summary>
         /// Odayı tara butonuyla 4 köşe seçim modunu başlatır.
         /// </summary>
-        public new void StartScanning()
+        public void StartScanning()
         {
             TransitionTo(AppState.Scanning);
             var boundaryManager = GetComponent<RoomBoundaryManager>();
