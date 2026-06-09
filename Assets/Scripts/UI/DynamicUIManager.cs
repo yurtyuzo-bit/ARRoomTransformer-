@@ -15,6 +15,7 @@ namespace ARRoomTransformer
         private RectTransform sidePanelRect;
         private Text centerPromptText;
         private Text recordBtnText;
+        private GameObject crosshairObj;
         
         private bool isMenuOpen = false;
 
@@ -106,6 +107,22 @@ namespace ARRoomTransformer
             outline.effectColor = Color.black;
             outline.effectDistance = new Vector2(3, -3);
             centerPromptText.text = "";
+
+            // --- Merkez İmleç (Crosshair) ---
+            crosshairObj = new GameObject("Crosshair");
+            crosshairObj.transform.SetParent(canvasObj.transform, false);
+            var chRect = crosshairObj.AddComponent<RectTransform>();
+            chRect.anchorMin = new Vector2(0.5f, 0.5f);
+            chRect.anchorMax = new Vector2(0.5f, 0.5f);
+            chRect.anchoredPosition = Vector2.zero;
+            chRect.sizeDelta = new Vector2(50, 50);
+            var chText = crosshairObj.AddComponent<Text>();
+            chText.text = "+";
+            chText.font = defaultFont;
+            chText.fontSize = 70;
+            chText.alignment = TextAnchor.MiddleCenter;
+            chText.color = new Color(1f, 0.2f, 0.2f, 0.9f); // Neon Kırmızı
+            crosshairObj.SetActive(false); // Başlangıçta gizli
 
             // --- Sağ Panel (Kütüphane) ---
             var sidePanelObj = new GameObject("SidePanel");
@@ -297,6 +314,15 @@ namespace ARRoomTransformer
         {
             yield return new WaitForSeconds(delay);
             centerPromptText.text = "";
+        }
+
+        private void Update()
+        {
+            if (appManager != null && crosshairObj != null)
+            {
+                // İmleç sadece Scanning (Odayı Tara / Sınır Seçme) modunda aktif olur
+                crosshairObj.SetActive(appManager.CurrentState == AppManager.AppState.Scanning);
+            }
         }
     }
 }

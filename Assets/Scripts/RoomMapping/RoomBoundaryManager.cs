@@ -8,8 +8,8 @@ using UnityEngine.InputSystem.EnhancedTouch;
 namespace ARRoomTransformer
 {
     /// <summary>
-    /// Kullanıcının 4 köşe belirleyerek, dışarısını okyanusla/karanlıkla kaplamasını sağlar.
-    /// Ters (Hole) Mesh algoritması kullanarak "Güvenli Alan" oluşturur.
+    /// Kullanıcının nişangah (Crosshair) ile 4 çivi çakarak sınırları belirlemesini sağlar.
+    /// Çiviler arasına ip gerilir ve sonrasında dışarısı okyanusla kaplanır.
     /// </summary>
     public class RoomBoundaryManager : MonoBehaviour
     {
@@ -18,7 +18,8 @@ namespace ARRoomTransformer
         private ARRaycastManager arRaycastManager;
         private GameObject boundaryMeshObject;
         private GameObject cornerMarkersParent;
-        public Material boundaryMaterial; // Opsiyonel, yoksa otomatik koyu mavi atanır
+        private LineRenderer stringRenderer;
+        public Material boundaryMaterial;
 
         private void Awake()
         {
@@ -47,38 +48,95 @@ namespace ARRoomTransformer
             if (boundaryMeshObject != null) Destroy(boundaryMeshObject);
             if (cornerMarkersParent != null) Destroy(cornerMarkersParent);
             
-            cornerMarkersParent = new GameObject("CornerMarkers");
-            Debug.Log("[RoomBoundaryManager] Sınır belirleme modu başladı. Zemine 4 köşe dokunun.");
+            cornerMarkersParent = new GameObject("BoundaryMarkers");
+            
+            // Çiviler arasındaki İP (String) görseli için LineRenderer
+            var lineObj = new GameObject("StringRenderer");
+            lineObj.transform.SetParent(cornerMarkersParent.transform);
+            stringRenderer = lineObj.AddComponent<LineRenderer>();
+            stringRenderer.startWidth = 0.02f; // 2 cm kalınlığında ip
+            stringRenderer.endWidth = 0.02f;
+            stringRenderer.material = new Material(Shader.Find("Sprites/Default"));
+            stringRenderer.startColor = Color.red; // Kırmızı ip
+            stringRenderer.endColor = Color.yellow;
+            stringRenderer.positionCount = 0;
+            stringRenderer.numCapVertices = 5;
+            stringRenderer.numCornerVertices = 5;
+
+            Debug.Log("[RoomBoundaryManager] Çivi/İp Sınır belirleme modu başladı.");
+        }
+
+        private void Update()
+        {
+            // Sınır belirleme modundaysak ve 4 çivi dolmamışsa
+            if (!isSetupMode || cornerPoints.Count >= 4 || stringRenderer == null) return;
+
+            // Parmak yerine Ekranın Tam Merkezinden (İmleç) AR zeminine Raycast gönder
+            Vector2 screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
+            List<ARRaycastHit> hits = new List<ARRaycastHit>();
+            
+            if (arRaycastManager != null && arRaycastManager.Raycast(screenCenter, hits, TrackableType.PlaneWithinPolygon))
+            {
+                Vector3 currentHit = hits[0].pose.position;
+                
+                // --- CANLI İP ÖNİZLEMESİ ---
+                // Eğer en az 1 çivi çakılmışsa, son çividen imlecin vurduğu yere kadar ip uzat.
+                int pointCount = cornerPoints.Count;
+                if (pointCount > 0)
+                {
+                    stringRenderer.positionCount = pointCount + 1;
+                    for (int i = 0; i < pointCount; i++)
+                    {
+                        // İpi zeminin hafif üstünde tut (0.02f) ki zeminin içine batıp kaybolmasın
+                        stringRenderer.SetPosition(i, cornerPoints[i] + Vector3.up * 0.02f); 
+                    }
+                    stringRenderer.SetPosition(pointCount, currentHit + Vector3.up * 0.02f);
+                }
+            }
         }
 
         private void OnFingerDown(Finger finger)
         {
+            // Ekrana dokunulduğunda tetiklenir
             if (!isSetupMode || finger.index != 0 || cornerPoints.Count >= 4) return;
             
-            // UI'a tıklanıp tıklanmadığını kontrol etmek iyi olur, ancak şu an Canvas tam ekran değil.
-
+            // Dokunulan nokta neresi olursa olsun, çiviyi EKRANIN MERKEZİNDEKİ (İmleç) yere çakacağız.
+            Vector2 screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
             List<ARRaycastHit> hits = new List<ARRaycastHit>();
-            if (arRaycastManager != null && arRaycastManager.Raycast(finger.currentTouch.screenPosition, hits, TrackableType.PlaneWithinPolygon))
+            
+            if (arRaycastManager != null && arRaycastManager.Raycast(screenCenter, hits, TrackableType.PlaneWithinPolygon))
             {
                 Vector3 hitPoint = hits[0].pose.position;
                 cornerPoints.Add(hitPoint);
-                Debug.Log($"[RoomBoundaryManager] Köşe {cornerPoints.Count} eklendi: {hitPoint}");
+                Debug.Log($"[RoomBoundaryManager] Çivi {cornerPoints.Count} çakıldı: {hitPoint}");
 
-                // Geçici nokta görseli (Küçük bir küre)
-                GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                sphere.transform.position = hitPoint;
-                sphere.transform.localScale = Vector3.one * 0.05f;
-                sphere.transform.SetParent(cornerMarkersParent.transform);
-                var mat = sphere.GetComponent<MeshRenderer>().material;
-                mat.color = Color.green;
+                // --- 3D ÇİVİ (NAIL) GÖRSELİ OLUŞTURMA ---
+                GameObject nail = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+                nail.name = "Nail_" + cornerPoints.Count;
+                
+                // Zemine çakılmış gibi göstermek için pozisyonunu ayarlayalım
+                nail.transform.position = hitPoint + new Vector3(0, 0.03f, 0); 
+                nail.transform.localScale = new Vector3(0.015f, 0.05f, 0.015f); // İnce ve sivri görünüm
+                nail.transform.SetParent(cornerMarkersParent.transform);
+                
+                // Metalik Gri Renk
+                var mat = nail.GetComponent<MeshRenderer>().material;
+                mat.color = new Color(0.6f, 0.6f, 0.6f); 
 
+                // Eğer 4 çivi de çakıldıysa, alanı kapat
                 if (cornerPoints.Count == 4)
                 {
+                    // İpi son çividen ilk çiviye bağla (Poligonu kapat)
+                    stringRenderer.positionCount = 5; // 4 çivi + başa dönüş
+                    for (int i = 0; i < 4; i++)
+                    {
+                        stringRenderer.SetPosition(i, cornerPoints[i] + Vector3.up * 0.02f);
+                    }
+                    stringRenderer.SetPosition(4, cornerPoints[0] + Vector3.up * 0.02f); // İpi başladığı yere bağla
+
+                    // Sınır belirlendi, Okyanus Mesh'ini oluştur
                     GenerateBoundaryMesh();
                     isSetupMode = false;
-                    
-                    // Nokta işaretçilerini gizle/sil
-                    Destroy(cornerMarkersParent);
                     
                     // AppManager'a işlemin bittiğini bildir
                     var appManager = FindObjectOfType<AppManager>();
@@ -110,23 +168,19 @@ namespace ARRoomTransformer
             Vector3[] vertices = new Vector3[8];
             for (int i = 0; i < 4; i++)
             {
-                vertices[i] = sortedPoints[i]; // İç
-                vertices[i + 4] = outerPoints[i]; // Dış
+                vertices[i] = sortedPoints[i]; // İç (Çiviler)
+                vertices[i + 4] = outerPoints[i]; // Dış (Sonsuzluk)
             }
 
             // 4. Mesh Üçgenlerini Bağla (Delik açılmış devasa poligon)
             int[] triangles = new int[]
             {
-                // Segment 0
                 4, 5, 1,
                 4, 1, 0,
-                // Segment 1
                 5, 6, 2,
                 5, 2, 1,
-                // Segment 2
                 6, 7, 3,
                 6, 3, 2,
-                // Segment 3
                 7, 4, 0,
                 7, 0, 3
             };
@@ -141,10 +195,10 @@ namespace ARRoomTransformer
             var mr = boundaryMeshObject.AddComponent<MeshRenderer>();
             mf.mesh = mesh;
 
-            // Eğer özel materyal atanmamışsa dinamik siyah/okyanus rengi üret
+            // Özel materyal atanmamışsa dinamik siyah/okyanus rengi üret
             if (boundaryMaterial == null)
             {
-                Shader shader = Shader.Find("Unlit/Color"); // Işıksız saf renk için
+                Shader shader = Shader.Find("Unlit/Color"); 
                 if (shader == null) shader = Shader.Find("Standard");
                 
                 boundaryMaterial = new Material(shader);
