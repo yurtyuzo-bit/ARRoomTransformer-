@@ -297,5 +297,65 @@ namespace ARRoomTransformer
         }
 
         #endregion
+
+        #region Developer UI
+
+        private void OnGUI()
+        {
+            // Telefon ekrani icin buyuk font ve butonlar
+            GUIStyle style = new GUIStyle(GUI.skin.button);
+            style.fontSize = Screen.width / 20; // Ekrana gore dinamik yazi boyutu
+            
+            GUIStyle labelStyle = new GUIStyle(GUI.skin.label);
+            labelStyle.fontSize = Screen.width / 18;
+            labelStyle.normal.textColor = Color.yellow;
+            
+            GUILayout.BeginArea(new Rect(50, 100, Screen.width - 100, Screen.height - 200));
+            
+            GUILayout.Label($"MEVCUT DURUM: {CurrentState}", labelStyle);
+            GUILayout.Space(50);
+            
+            if (CurrentState == AppState.Idle || CurrentState == AppState.Scanning)
+            {
+                if (GUILayout.Button("ODAYI TARA", style, GUILayout.Height(Screen.height / 8)))
+                {
+                    StartScanning();
+                }
+                GUILayout.Space(30);
+            }
+            
+            if (CurrentState == AppState.Scanning || CurrentState == AppState.Placing)
+            {
+                if (GUILayout.Button("ESYA YERLESTIR", style, GUILayout.Height(Screen.height / 8)))
+                {
+                    StartPlacing();
+                }
+                GUILayout.Space(30);
+            }
+            
+            if (CurrentState == AppState.Placing || CurrentState == AppState.Recording)
+            {
+                if (GUILayout.Button("KAYDI BASLAT / BITIR", style, GUILayout.Height(Screen.height / 8)))
+                {
+                    StartRecording();
+                }
+                GUILayout.Space(30);
+            }
+
+            GUILayout.FlexibleSpace();
+
+            GUIStyle resetStyle = new GUIStyle(GUI.skin.button);
+            resetStyle.fontSize = Screen.width / 25;
+            resetStyle.normal.textColor = Color.red;
+
+            if (GUILayout.Button("BASA DON (RESET)", resetStyle, GUILayout.Height(Screen.height / 10)))
+            {
+                Reset();
+            }
+
+            GUILayout.EndArea();
+        }
+
+        #endregion
     }
 }
