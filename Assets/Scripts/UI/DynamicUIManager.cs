@@ -324,5 +324,14 @@ namespace ARRoomTransformer
                 crosshairObj.SetActive(appManager.CurrentState == AppManager.AppState.Scanning);
             }
         }
+
+        public void SetCrosshairColor(Color color)
+        {
+            if (crosshairObj != null)
+            {
+                var txt = crosshairObj.GetComponent<Text>();
+                if (txt != null) txt.color = color;
+            }
+        }
     }
 }

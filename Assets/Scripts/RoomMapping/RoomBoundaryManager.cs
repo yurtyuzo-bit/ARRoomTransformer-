@@ -75,8 +75,13 @@ namespace ARRoomTransformer
             Vector2 screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
             List<ARRaycastHit> hits = new List<ARRaycastHit>();
             
+            var uiManager = FindObjectOfType<DynamicUIManager>();
+
             if (arRaycastManager != null && arRaycastManager.Raycast(screenCenter, hits, TrackableType.PlaneWithinPolygon))
             {
+                // Zemin algılandığında İmleç NEON KIRMIZI yanar
+                if (uiManager != null) uiManager.SetCrosshairColor(new Color(1f, 0.2f, 0.2f, 0.9f)); 
+
                 Vector3 currentHit = hits[0].pose.position;
                 
                 // --- CANLI İP ÖNİZLEMESİ ---
@@ -92,6 +97,12 @@ namespace ARRoomTransformer
                     }
                     stringRenderer.SetPosition(pointCount, currentHit + Vector3.up * 0.02f);
                 }
+            }
+            else
+            {
+                // Zemin algılanmıyorsa İmleç YARI SAYDAM GRİ olur, uzayan önizleme ipi saklanır
+                if (uiManager != null) uiManager.SetCrosshairColor(new Color(0.6f, 0.6f, 0.6f, 0.4f)); 
+                if (stringRenderer != null) stringRenderer.positionCount = cornerPoints.Count; 
             }
         }
 
