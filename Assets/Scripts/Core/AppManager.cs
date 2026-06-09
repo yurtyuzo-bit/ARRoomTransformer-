@@ -300,46 +300,80 @@ namespace ARRoomTransformer
 
         #region Developer UI
 
+        private Vector2 _scrollPosition;
+
         private void OnGUI()
         {
             // Telefon ekrani icin buyuk font ve butonlar
             GUIStyle style = new GUIStyle(GUI.skin.button);
-            style.fontSize = Screen.width / 20; // Ekrana gore dinamik yazi boyutu
+            style.fontSize = Screen.width / 25; // Ekrana gore dinamik yazi boyutu
             
             GUIStyle labelStyle = new GUIStyle(GUI.skin.label);
-            labelStyle.fontSize = Screen.width / 18;
+            labelStyle.fontSize = Screen.width / 20;
             labelStyle.normal.textColor = Color.yellow;
             
-            GUILayout.BeginArea(new Rect(50, 100, Screen.width - 100, Screen.height - 200));
+            GUILayout.BeginArea(new Rect(50, 50, Screen.width - 100, Screen.height - 100));
             
             GUILayout.Label($"MEVCUT DURUM: {CurrentState}", labelStyle);
-            GUILayout.Space(50);
+            GUILayout.Space(30);
             
             if (CurrentState == AppState.Idle || CurrentState == AppState.Scanning)
             {
-                if (GUILayout.Button("ODAYI TARA", style, GUILayout.Height(Screen.height / 8)))
+                if (GUILayout.Button("ODAYI TARA (Zemini Gezdir)", style, GUILayout.Height(Screen.height / 10)))
                 {
                     StartScanning();
                 }
-                GUILayout.Space(30);
+                GUILayout.Space(20);
             }
             
             if (CurrentState == AppState.Scanning || CurrentState == AppState.Placing)
             {
-                if (GUILayout.Button("ESYA YERLESTIR", style, GUILayout.Height(Screen.height / 8)))
+                if (GUILayout.Button("ESYALARI GOSTER", style, GUILayout.Height(Screen.height / 10)))
                 {
                     StartPlacing();
                 }
-                GUILayout.Space(30);
+                GUILayout.Space(20);
+            }
+
+            // Kutuphane Menusu
+            if (CurrentState == AppState.Placing)
+            {
+                var placer = UnityEngine.Object.FindAnyObjectByType<AssetPlacer>();
+                if (placer != null && placer.Catalog != null && placer.Catalog.Count > 0)
+                {
+                    GUILayout.Label("KUTUPHANE (Sec ve odaya dokun):", labelStyle);
+                    
+                    _scrollPosition = GUILayout.BeginScrollView(_scrollPosition, GUI.skin.box, GUILayout.Height(Screen.height / 2.5f));
+                    for (int i = 0; i < placer.Catalog.Count; i++)
+                    {
+                        var entry = placer.Catalog.Entries[i];
+                        string btnText = (placer.SelectedCatalogEntry == entry) ? $"[ SECILDI ] {entry.displayName}" : entry.displayName;
+                        
+                        // Secili olani yesil yap
+                        GUI.backgroundColor = (placer.SelectedCatalogEntry == entry) ? Color.green : Color.white;
+
+                        if (GUILayout.Button(btnText, style, GUILayout.Height(Screen.height / 12)))
+                        {
+                            placer.SelectCatalogEntry(i);
+                        }
+                        GUI.backgroundColor = Color.white; // Rengi sifirla
+                    }
+                    GUILayout.EndScrollView();
+                    GUILayout.Space(20);
+                }
+                else
+                {
+                    GUILayout.Label("Kutuphane bos veya AssetPlacer bulunamadi!", labelStyle);
+                }
             }
             
             if (CurrentState == AppState.Placing || CurrentState == AppState.Recording)
             {
-                if (GUILayout.Button("KAYDI BASLAT / BITIR", style, GUILayout.Height(Screen.height / 8)))
+                if (GUILayout.Button("KAYDI BASLAT / BITIR", style, GUILayout.Height(Screen.height / 10)))
                 {
                     StartRecording();
                 }
-                GUILayout.Space(30);
+                GUILayout.Space(20);
             }
 
             GUILayout.FlexibleSpace();
@@ -348,7 +382,7 @@ namespace ARRoomTransformer
             resetStyle.fontSize = Screen.width / 25;
             resetStyle.normal.textColor = Color.red;
 
-            if (GUILayout.Button("BASA DON (RESET)", resetStyle, GUILayout.Height(Screen.height / 10)))
+            if (GUILayout.Button("BASA DON (RESET)", resetStyle, GUILayout.Height(Screen.height / 12)))
             {
                 Reset();
             }
