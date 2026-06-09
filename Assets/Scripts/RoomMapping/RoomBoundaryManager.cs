@@ -41,6 +41,9 @@ namespace ARRoomTransformer
             isSetupMode = true;
             cornerPoints.Clear();
 
+            var planeManager = FindAnyObjectByType<ARPlaneManager>();
+            if (planeManager != null) planeManager.enabled = true;
+
 #if UNITY_EDITOR
             // Bilgisayar testleri için çok KRİTİK: Kamerayı yerden insan boyuna kaldır!
             if (Camera.main != null && Camera.main.transform.position.y < 0.5f)
@@ -114,19 +117,27 @@ namespace ARRoomTransformer
         private void OnFingerDown(Finger finger)
         {
             if (finger.index != 0) return;
-            ProcessTap();
+            ProcessTap(finger.screenPosition);
         }
 
-        private void ProcessTap()
+        private void ProcessTap(Vector2? tapPos = null)
         {
             if (!isSetupMode || cornerPoints.Count >= 4) return;
             
-            Vector2 screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
+            Vector2 screenPos;
+            if (tapPos.HasValue) 
+            {
+                screenPos = tapPos.Value;
+            }
+            else
+            {
+                screenPos = new Vector2(Screen.width / 2f, Screen.height / 2f);
 #if UNITY_EDITOR
-            if (Mouse.current != null) screenCenter = Mouse.current.position.ReadValue();
+                if (Mouse.current != null) screenPos = Mouse.current.position.ReadValue();
 #endif
+            }
             
-            if (TryGetHit(screenCenter, out Vector3 hitPoint))
+            if (TryGetHit(screenPos, out Vector3 hitPoint))
             {
                 cornerPoints.Add(hitPoint);
                 Debug.Log($"[RoomBoundaryManager] Çivi {cornerPoints.Count} çakıldı: {hitPoint}");
@@ -163,7 +174,7 @@ namespace ARRoomTransformer
 
             // 1. AR Düzlemleri (Gerçek Telefon Testi)
             List<ARRaycastHit> hits = new List<ARRaycastHit>();
-            if (arRaycastManager != null && arRaycastManager.Raycast(screenPos, hits, TrackableType.PlaneWithinPolygon))
+            if (arRaycastManager != null && arRaycastManager.Raycast(screenPos, hits, TrackableType.PlaneWithinPolygon | TrackableType.PlaneEstimated))
             {
                 hitPoint = hits[0].pose.position;
                 return true;
