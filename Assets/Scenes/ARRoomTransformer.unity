@@ -366,7 +366,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91b2561fa2c45fb46a9691ff174e7a8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ARRoomTransformer::ARRoomTransformer.AssetPlacer
-  catalog: {fileID: 0}
+  catalog: {fileID: 11400000, guid: 9bb23cac9c9e8f240a109b5aab6102bf, type: 2}
   raycastAgainstPlanes: 1
   raycastAgainstRoomSurfaces: 1
   roomSurfaceLayerMask:
@@ -1192,10 +1192,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1748e02ec55f4c64aaf50cbd62a88cfb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ARRoomTransformer::ARRoomTransformer.UIManager
-  _mainMenuPanel: {fileID: 0}
-  _roomScanPanel: {fileID: 0}
-  _assetPlacementPanel: {fileID: 0}
-  _recordingPanel: {fileID: 0}
+  _mainMenuPanel: {fileID: 503521630}
+  _roomScanPanel: {fileID: 1103186042}
+  _assetPlacementPanel: {fileID: 1005300351}
+  _recordingPanel: {fileID: 1766147647}
   _sceneLoadPanel: {fileID: 0}
   _settingsPanel: {fileID: 0}
   _fadeDuration: 0.25
@@ -1606,8 +1606,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4966719baa26e4b0e8231a24d9bd491a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.XR.ARFoundation::UnityEngine.XR.ARFoundation.ARCameraManager
-  m_FocusMode: 1
-  m_LightEstimationMode: 0
+  m_FocusMode: -1
+  m_LightEstimationMode: -1
   m_AutoFocus: 1
   m_ImageStabilization: 0
   m_LightEstimation: 0
