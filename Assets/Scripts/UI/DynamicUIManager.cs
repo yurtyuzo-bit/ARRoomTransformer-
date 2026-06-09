@@ -205,7 +205,7 @@ namespace ARRoomTransformer
                 {
                     var entry = new AssetEntry();
                     entry.displayName = names[i];
-                    entry.id = i.ToString();
+                    entry.assetId = i.ToString();
                     entry.defaultScale = 0.3f;
                     
                     // --- CANLI DUMMY 3D MODEL OLUŞTUR ---
