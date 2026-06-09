@@ -40,6 +40,15 @@ namespace ARRoomTransformer
         {
             isSetupMode = true;
             cornerPoints.Clear();
+
+#if UNITY_EDITOR
+            // Bilgisayar testleri için çok KRİTİK: Kamerayı yerden insan boyuna kaldır!
+            if (Camera.main != null && Camera.main.transform.position.y < 0.5f)
+            {
+                Camera.main.transform.position = new Vector3(0, 1.5f, -2f);
+                Camera.main.transform.rotation = Quaternion.Euler(20f, 0, 0); // Yere doğru hafif eğik
+            }
+#endif
             
             if (boundaryMeshObject != null) Destroy(boundaryMeshObject);
             if (cornerMarkersParent != null) Destroy(cornerMarkersParent);
@@ -203,10 +212,15 @@ namespace ARRoomTransformer
 
             if (boundaryMaterial == null)
             {
-                Shader shader = Shader.Find("Unlit/Color"); 
+                Shader shader = Shader.Find("Universal Render Pipeline/Unlit"); 
+                if (shader == null) shader = Shader.Find("Unlit/Color");
                 if (shader == null) shader = Shader.Find("Standard");
+                
                 boundaryMaterial = new Material(shader);
-                boundaryMaterial.color = new Color(0.01f, 0.05f, 0.15f, 1.0f); // Derin Okyanus Mavisi
+                if (boundaryMaterial.HasProperty("_BaseColor"))
+                    boundaryMaterial.SetColor("_BaseColor", new Color(0.01f, 0.05f, 0.15f, 1.0f)); // URP
+                else
+                    boundaryMaterial.color = new Color(0.01f, 0.05f, 0.15f, 1.0f); // Standard
             }
 
             // 1. ZEMİN (Dışarısı)
