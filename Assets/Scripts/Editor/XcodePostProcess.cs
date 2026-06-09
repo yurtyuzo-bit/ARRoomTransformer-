@@ -52,7 +52,7 @@ public class XcodePostProcess
             }
             else
             {
-                Debug.LogError("Could not find AppIcon.png or Icon-120.png!");
+                Debug.LogWarning("Could not find AppIcon.png or Icon-120.png! Proceeding without them.");
             }
         }
     }
