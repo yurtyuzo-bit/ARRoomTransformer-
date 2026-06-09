@@ -3,14 +3,12 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
+using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.EnhancedTouch;
+using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
 
 namespace ARRoomTransformer
 {
-    /// <summary>
-    /// Kullanıcının nişangah (Crosshair) ile 4 çivi çakarak sınırları belirlemesini sağlar.
-    /// Çiviler arasına ip gerilir ve sonrasında dışarısı okyanusla kaplanır.
-    /// </summary>
     public class RoomBoundaryManager : MonoBehaviour
     {
         public bool isSetupMode = false;
@@ -24,19 +22,17 @@ namespace ARRoomTransformer
         private void Awake()
         {
             arRaycastManager = FindObjectOfType<ARRaycastManager>();
-            if (arRaycastManager == null)
-                Debug.LogError("[RoomBoundaryManager] ARRaycastManager bulunamadı!");
         }
 
         private void OnEnable()
         {
             EnhancedTouchSupport.Enable();
-            UnityEngine.InputSystem.EnhancedTouch.Touch.onFingerDown += OnFingerDown;
+            Touch.onFingerDown += OnFingerDown;
         }
 
         private void OnDisable()
         {
-            UnityEngine.InputSystem.EnhancedTouch.Touch.onFingerDown -= OnFingerDown;
+            Touch.onFingerDown -= OnFingerDown;
             EnhancedTouchSupport.Disable();
         }
 
@@ -50,14 +46,13 @@ namespace ARRoomTransformer
             
             cornerMarkersParent = new GameObject("BoundaryMarkers");
             
-            // Çiviler arasındaki İP (String) görseli için LineRenderer
             var lineObj = new GameObject("StringRenderer");
             lineObj.transform.SetParent(cornerMarkersParent.transform);
             stringRenderer = lineObj.AddComponent<LineRenderer>();
-            stringRenderer.startWidth = 0.02f; // 2 cm kalınlığında ip
+            stringRenderer.startWidth = 0.02f;
             stringRenderer.endWidth = 0.02f;
             stringRenderer.material = new Material(Shader.Find("Sprites/Default"));
-            stringRenderer.startColor = Color.red; // Kırmızı ip
+            stringRenderer.startColor = Color.red;
             stringRenderer.endColor = Color.yellow;
             stringRenderer.positionCount = 0;
             stringRenderer.numCapVertices = 5;
@@ -68,31 +63,21 @@ namespace ARRoomTransformer
 
         private void Update()
         {
-            // Sınır belirleme modundaysak ve 4 çivi dolmamışsa
             if (!isSetupMode || cornerPoints.Count >= 4 || stringRenderer == null) return;
 
-            // Parmak yerine Ekranın Tam Merkezinden (İmleç) AR zeminine Raycast gönder
             Vector2 screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
-            List<ARRaycastHit> hits = new List<ARRaycastHit>();
-            
             var uiManager = FindObjectOfType<DynamicUIManager>();
 
-            if (arRaycastManager != null && arRaycastManager.Raycast(screenCenter, hits, TrackableType.PlaneWithinPolygon))
+            if (TryGetHit(screenCenter, out Vector3 currentHit))
             {
-                // Zemin algılandığında İmleç NEON KIRMIZI yanar
-                if (uiManager != null) uiManager.SetCrosshairColor(new Color(1f, 0.2f, 0.2f, 0.9f)); 
-
-                Vector3 currentHit = hits[0].pose.position;
+                if (uiManager != null) uiManager.SetCrosshairColor(Color.red); // Kırmızı (Hazır)
                 
-                // --- CANLI İP ÖNİZLEMESİ ---
-                // Eğer en az 1 çivi çakılmışsa, son çividen imlecin vurduğu yere kadar ip uzat.
                 int pointCount = cornerPoints.Count;
                 if (pointCount > 0)
                 {
                     stringRenderer.positionCount = pointCount + 1;
                     for (int i = 0; i < pointCount; i++)
                     {
-                        // İpi zeminin hafif üstünde tut (0.02f) ki zeminin içine batıp kaybolmasın
                         stringRenderer.SetPosition(i, cornerPoints[i] + Vector3.up * 0.02f); 
                     }
                     stringRenderer.SetPosition(pointCount, currentHit + Vector3.up * 0.02f);
@@ -100,100 +85,126 @@ namespace ARRoomTransformer
             }
             else
             {
-                // Zemin algılanmıyorsa İmleç YARI SAYDAM GRİ olur, uzayan önizleme ipi saklanır
-                if (uiManager != null) uiManager.SetCrosshairColor(new Color(0.6f, 0.6f, 0.6f, 0.4f)); 
+                // Bilgisayarda veya zemin bulunamadığında imleci SARI yapıp görünür tutalım
+                if (uiManager != null) uiManager.SetCrosshairColor(Color.yellow); 
                 if (stringRenderer != null) stringRenderer.positionCount = cornerPoints.Count; 
             }
+
+            // --- EDITOR FARE (MOUSE) DESTEĞİ ---
+#if UNITY_EDITOR
+            if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
+            {
+                ProcessTap();
+            }
+#endif
         }
 
         private void OnFingerDown(Finger finger)
         {
-            // Ekrana dokunulduğunda tetiklenir
-            if (!isSetupMode || finger.index != 0 || cornerPoints.Count >= 4) return;
+            if (finger.index != 0) return;
+            ProcessTap();
+        }
+
+        private void ProcessTap()
+        {
+            if (!isSetupMode || cornerPoints.Count >= 4) return;
             
-            // Dokunulan nokta neresi olursa olsun, çiviyi EKRANIN MERKEZİNDEKİ (İmleç) yere çakacağız.
             Vector2 screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
-            List<ARRaycastHit> hits = new List<ARRaycastHit>();
             
-            if (arRaycastManager != null && arRaycastManager.Raycast(screenCenter, hits, TrackableType.PlaneWithinPolygon))
+            if (TryGetHit(screenCenter, out Vector3 hitPoint))
             {
-                Vector3 hitPoint = hits[0].pose.position;
                 cornerPoints.Add(hitPoint);
                 Debug.Log($"[RoomBoundaryManager] Çivi {cornerPoints.Count} çakıldı: {hitPoint}");
 
-                // --- 3D ÇİVİ (NAIL) GÖRSELİ OLUŞTURMA ---
                 GameObject nail = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
                 nail.name = "Nail_" + cornerPoints.Count;
-                
-                // Zemine çakılmış gibi göstermek için pozisyonunu ayarlayalım
                 nail.transform.position = hitPoint + new Vector3(0, 0.03f, 0); 
-                nail.transform.localScale = new Vector3(0.015f, 0.05f, 0.015f); // İnce ve sivri görünüm
+                nail.transform.localScale = new Vector3(0.02f, 0.1f, 0.02f); // Çivi
                 nail.transform.SetParent(cornerMarkersParent.transform);
-                
-                // Metalik Gri Renk
                 var mat = nail.GetComponent<MeshRenderer>().material;
-                mat.color = new Color(0.6f, 0.6f, 0.6f); 
+                mat.color = new Color(0.8f, 0.8f, 0.8f); 
 
-                // Eğer 4 çivi de çakıldıysa, alanı kapat
                 if (cornerPoints.Count == 4)
                 {
-                    // İpi son çividen ilk çiviye bağla (Poligonu kapat)
-                    stringRenderer.positionCount = 5; // 4 çivi + başa dönüş
+                    stringRenderer.positionCount = 5; 
                     for (int i = 0; i < 4; i++)
                     {
                         stringRenderer.SetPosition(i, cornerPoints[i] + Vector3.up * 0.02f);
                     }
-                    stringRenderer.SetPosition(4, cornerPoints[0] + Vector3.up * 0.02f); // İpi başladığı yere bağla
+                    stringRenderer.SetPosition(4, cornerPoints[0] + Vector3.up * 0.02f); 
 
-                    // Sınır belirlendi, Okyanus Mesh'ini oluştur
                     GenerateBoundaryMesh();
                     isSetupMode = false;
                     
-                    // AppManager'a işlemin bittiğini bildir
                     var appManager = FindObjectOfType<AppManager>();
                     if (appManager != null) appManager.SendMessage("OnBoundarySetupComplete", SendMessageOptions.DontRequireReceiver);
                 }
             }
         }
 
+        private bool TryGetHit(Vector2 screenPos, out Vector3 hitPoint)
+        {
+            hitPoint = Vector3.zero;
+
+            // 1. AR Düzlemleri (Gerçek Telefon Testi)
+            List<ARRaycastHit> hits = new List<ARRaycastHit>();
+            if (arRaycastManager != null && arRaycastManager.Raycast(screenPos, hits, TrackableType.PlaneWithinPolygon))
+            {
+                hitPoint = hits[0].pose.position;
+                return true;
+            }
+
+            Camera cam = Camera.main;
+            if (cam == null) return false;
+
+            // 2. Fiziksel Objeler (Editor içindeki 3D modeller)
+            Ray ray = cam.ScreenPointToRay(screenPos);
+            if (Physics.Raycast(ray, out RaycastHit physHit, 50f))
+            {
+                hitPoint = physHit.point;
+                return true;
+            }
+
+            // 3. Bilgisayar Testi İçin Sanal Zemin (Y=0 Düzlemi)
+#if UNITY_EDITOR
+            Plane floorPlane = new Plane(Vector3.up, Vector3.zero);
+            if (floorPlane.Raycast(ray, out float enter))
+            {
+                hitPoint = ray.GetPoint(enter);
+                return true;
+            }
+#endif
+
+            return false;
+        }
+
         private void GenerateBoundaryMesh()
         {
-            // 1. Merkez Noktasını (Centroid) Bul
             Vector3 centroid = Vector3.zero;
             foreach (var p in cornerPoints) centroid += p;
             centroid /= 4f;
 
-            // 2. Noktaları Saat Yönünde Sırala (Açıya göre)
             var sortedPoints = cornerPoints.OrderBy(p => Mathf.Atan2(p.z - centroid.z, p.x - centroid.x)).ToList();
 
-            // 3. Dış Noktaları Hesapla (Devasa okyanusun sınırları)
             Vector3[] outerPoints = new Vector3[4];
             for (int i = 0; i < 4; i++)
             {
                 Vector3 dir = (sortedPoints[i] - centroid).normalized;
-                dir.y = 0; // Zeminle düz olması için
-                outerPoints[i] = centroid + dir * 1000f; // 1000 metre dışarıya doğru
+                dir.y = 0; 
+                outerPoints[i] = centroid + dir * 1000f; 
             }
 
-            // Vertices array: 0-3 İç Kısım, 4-7 Dış Kısım
             Vector3[] vertices = new Vector3[8];
             for (int i = 0; i < 4; i++)
             {
-                vertices[i] = sortedPoints[i]; // İç (Çiviler)
-                vertices[i + 4] = outerPoints[i]; // Dış (Sonsuzluk)
+                vertices[i] = sortedPoints[i]; 
+                vertices[i + 4] = outerPoints[i]; 
             }
 
-            // 4. Mesh Üçgenlerini Bağla (Delik açılmış devasa poligon)
             int[] triangles = new int[]
             {
-                4, 5, 1,
-                4, 1, 0,
-                5, 6, 2,
-                5, 2, 1,
-                6, 7, 3,
-                6, 3, 2,
-                7, 4, 0,
-                7, 0, 3
+                4, 5, 1,  4, 1, 0,  5, 6, 2,  5, 2, 1,
+                6, 7, 3,  6, 3, 2,  7, 4, 0,  7, 0, 3
             };
 
             Mesh mesh = new Mesh();
@@ -206,20 +217,16 @@ namespace ARRoomTransformer
             var mr = boundaryMeshObject.AddComponent<MeshRenderer>();
             mf.mesh = mesh;
 
-            // Özel materyal atanmamışsa dinamik siyah/okyanus rengi üret
             if (boundaryMaterial == null)
             {
                 Shader shader = Shader.Find("Unlit/Color"); 
                 if (shader == null) shader = Shader.Find("Standard");
-                
                 boundaryMaterial = new Material(shader);
-                boundaryMaterial.color = new Color(0.01f, 0.05f, 0.15f, 1.0f); // Derin Okyanus Mavisi
+                boundaryMaterial.color = new Color(0.01f, 0.05f, 0.15f, 1.0f); 
             }
             mr.material = boundaryMaterial;
             
-            // Z-fighting'i önlemek için kameradan/zeminden 0.5 cm yukarı kaldırıyoruz
             boundaryMeshObject.transform.position = new Vector3(0, 0.005f, 0);
-
             Debug.Log("[RoomBoundaryManager] Okyanus maskesi oluşturuldu!");
         }
     }
