@@ -187,6 +187,9 @@ namespace ARRoomTransformer
         private void OnEnable()
         {
             EnhancedTouchSupport.Enable();
+#if UNITY_EDITOR
+            UnityEngine.InputSystem.EnhancedTouch.TouchSimulation.Enable();
+#endif
             UnityEngine.InputSystem.EnhancedTouch.Touch.onFingerDown += OnFingerDown;
             UnityEngine.InputSystem.EnhancedTouch.Touch.onFingerMove += OnFingerMove;
             UnityEngine.InputSystem.EnhancedTouch.Touch.onFingerUp += OnFingerUp;

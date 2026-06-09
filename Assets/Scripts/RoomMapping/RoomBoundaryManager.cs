@@ -186,6 +186,18 @@ namespace ARRoomTransformer
 
             var sortedPoints = cornerPoints.OrderBy(p => Mathf.Atan2(p.z - centroid.z, p.x - centroid.x)).ToList();
 
+            boundaryMeshObject = new GameObject("OceanBoundaryMask");
+            boundaryMeshObject.transform.position = new Vector3(0, 0.005f, 0);
+
+            if (boundaryMaterial == null)
+            {
+                Shader shader = Shader.Find("Unlit/Color"); 
+                if (shader == null) shader = Shader.Find("Standard");
+                boundaryMaterial = new Material(shader);
+                boundaryMaterial.color = new Color(0.01f, 0.05f, 0.15f, 1.0f); // Derin Okyanus Mavisi
+            }
+
+            // 1. ZEMİN (Dışarısı)
             Vector3[] outerPoints = new Vector3[4];
             for (int i = 0; i < 4; i++)
             {
@@ -193,41 +205,73 @@ namespace ARRoomTransformer
                 dir.y = 0; 
                 outerPoints[i] = centroid + dir * 1000f; 
             }
-
-            Vector3[] vertices = new Vector3[8];
+            Vector3[] floorVertices = new Vector3[8];
             for (int i = 0; i < 4; i++)
             {
-                vertices[i] = sortedPoints[i]; 
-                vertices[i + 4] = outerPoints[i]; 
+                floorVertices[i] = sortedPoints[i]; 
+                floorVertices[i + 4] = outerPoints[i]; 
             }
-
-            int[] triangles = new int[]
+            int[] floorTriangles = new int[]
             {
                 4, 5, 1,  4, 1, 0,  5, 6, 2,  5, 2, 1,
                 6, 7, 3,  6, 3, 2,  7, 4, 0,  7, 0, 3
             };
+            Mesh floorMesh = new Mesh { vertices = floorVertices, triangles = floorTriangles };
+            floorMesh.RecalculateNormals();
 
-            Mesh mesh = new Mesh();
-            mesh.vertices = vertices;
-            mesh.triangles = triangles;
-            mesh.RecalculateNormals();
+            var floorObj = new GameObject("OceanFloor");
+            floorObj.transform.SetParent(boundaryMeshObject.transform, false);
+            floorObj.AddComponent<MeshFilter>().mesh = floorMesh;
+            floorObj.AddComponent<MeshRenderer>().material = boundaryMaterial;
 
-            boundaryMeshObject = new GameObject("OceanBoundaryMask");
-            var mf = boundaryMeshObject.AddComponent<MeshFilter>();
-            var mr = boundaryMeshObject.AddComponent<MeshRenderer>();
-            mf.mesh = mesh;
-
-            if (boundaryMaterial == null)
+            // 2. DUVARLAR (4 Köşeden gökyüzüne uzanan perdeler - Dışarıyı gizler)
+            float wallHeight = 500f;
+            Vector3[] wallVertices = new Vector3[8];
+            for (int i = 0; i < 4; i++)
             {
-                Shader shader = Shader.Find("Unlit/Color"); 
-                if (shader == null) shader = Shader.Find("Standard");
-                boundaryMaterial = new Material(shader);
-                boundaryMaterial.color = new Color(0.01f, 0.05f, 0.15f, 1.0f); 
+                wallVertices[i] = sortedPoints[i]; // Alt kenar
+                wallVertices[i + 4] = sortedPoints[i] + new Vector3(0, wallHeight, 0); // Üst kenar
             }
-            mr.material = boundaryMaterial;
-            
-            boundaryMeshObject.transform.position = new Vector3(0, 0.005f, 0);
-            Debug.Log("[RoomBoundaryManager] Okyanus maskesi oluşturuldu!");
+            int[] wallTriangles = new int[]
+            {
+                0, 1, 5,  0, 5, 4,
+                1, 2, 6,  1, 6, 5,
+                2, 3, 7,  2, 7, 6,
+                3, 0, 4,  3, 4, 7
+            };
+            // Çift taraflı görünmesi için ters üçgenleri de ekle
+            int[] doubleWalls = new int[wallTriangles.Length * 2];
+            for (int i = 0; i < wallTriangles.Length; i += 3)
+            {
+                doubleWalls[i] = wallTriangles[i];
+                doubleWalls[i + 1] = wallTriangles[i + 1];
+                doubleWalls[i + 2] = wallTriangles[i + 2];
+
+                doubleWalls[wallTriangles.Length + i] = wallTriangles[i];
+                doubleWalls[wallTriangles.Length + i + 1] = wallTriangles[i + 2];
+                doubleWalls[wallTriangles.Length + i + 2] = wallTriangles[i + 1];
+            }
+            Mesh wallMesh = new Mesh { vertices = wallVertices, triangles = doubleWalls };
+            wallMesh.RecalculateNormals();
+
+            var wallObj = new GameObject("OceanWalls");
+            wallObj.transform.SetParent(boundaryMeshObject.transform, false);
+            wallObj.AddComponent<MeshFilter>().mesh = wallMesh;
+            wallObj.AddComponent<MeshRenderer>().material = boundaryMaterial;
+
+            // 3. TAVAN (Kutuyu Kapatır)
+            Vector3[] ceilingVertices = new Vector3[4];
+            for (int i = 0; i < 4; i++) ceilingVertices[i] = outerPoints[i] + new Vector3(0, wallHeight, 0);
+            int[] ceilingTriangles = new int[] { 0, 1, 2, 0, 2, 3, 0, 2, 1, 0, 3, 2 }; // Çift yönlü
+            Mesh ceilingMesh = new Mesh { vertices = ceilingVertices, triangles = ceilingTriangles };
+            ceilingMesh.RecalculateNormals();
+
+            var ceilingObj = new GameObject("OceanCeiling");
+            ceilingObj.transform.SetParent(boundaryMeshObject.transform, false);
+            ceilingObj.AddComponent<MeshFilter>().mesh = ceilingMesh;
+            ceilingObj.AddComponent<MeshRenderer>().material = boundaryMaterial;
+
+            Debug.Log("[RoomBoundaryManager] 3 Boyutlu Okyanus Maskesi oluşturuldu!");
         }
     }
 }
