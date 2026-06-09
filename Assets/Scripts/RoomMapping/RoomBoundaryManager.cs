@@ -244,6 +244,7 @@ namespace ARRoomTransformer
             };
             Mesh floorMesh = new Mesh { vertices = floorVertices, triangles = floorTriangles };
             floorMesh.RecalculateNormals();
+            floorMesh.RecalculateBounds();
 
             var floorObj = new GameObject("OceanFloor");
             floorObj.transform.SetParent(boundaryMeshObject.transform, false);
@@ -279,6 +280,7 @@ namespace ARRoomTransformer
             }
             Mesh wallMesh = new Mesh { vertices = wallVertices, triangles = doubleWalls };
             wallMesh.RecalculateNormals();
+            wallMesh.RecalculateBounds();
 
             var wallObj = new GameObject("OceanWalls");
             wallObj.transform.SetParent(boundaryMeshObject.transform, false);
@@ -291,6 +293,7 @@ namespace ARRoomTransformer
             int[] ceilingTriangles = new int[] { 0, 1, 2, 0, 2, 3, 0, 2, 1, 0, 3, 2 }; // Çift yönlü
             Mesh ceilingMesh = new Mesh { vertices = ceilingVertices, triangles = ceilingTriangles };
             ceilingMesh.RecalculateNormals();
+            ceilingMesh.RecalculateBounds();
 
             var ceilingObj = new GameObject("OceanCeiling");
             ceilingObj.transform.SetParent(boundaryMeshObject.transform, false);
