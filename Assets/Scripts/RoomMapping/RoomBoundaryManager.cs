@@ -173,6 +173,12 @@ namespace ARRoomTransformer
                 hitPoint = ray.GetPoint(enter);
                 return true;
             }
+            
+            // DÜZ BAKMA DURUMU: Eğer kamera ufka bakıyorsa ışın yeri kesmez.
+            // Bu durumda zorla kameranın 3 metre önüne çiviyi çak.
+            hitPoint = cam.transform.position + cam.transform.forward * 3f;
+            hitPoint.y = 0; // Çiviyi yere sabitle
+            return true;
 #endif
 
             return false;
