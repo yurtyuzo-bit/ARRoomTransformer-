@@ -216,7 +216,7 @@ namespace ARRoomTransformer
                     dummyObj.SetActive(false);
                     entry.prefab = dummyObj;
 
-                    assetPlacer.Catalog.Entries.Add(entry);
+                    assetPlacer.Catalog.AddEntry(entry);
                 }
 
                 for (int i = 0; i < assetPlacer.Catalog.Count; i++)
