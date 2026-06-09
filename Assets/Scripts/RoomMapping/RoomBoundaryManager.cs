@@ -66,6 +66,9 @@ namespace ARRoomTransformer
             if (!isSetupMode || cornerPoints.Count >= 4 || stringRenderer == null) return;
 
             Vector2 screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
+#if UNITY_EDITOR
+            if (Mouse.current != null) screenCenter = Mouse.current.position.ReadValue();
+#endif
             var uiManager = FindObjectOfType<DynamicUIManager>();
 
             if (TryGetHit(screenCenter, out Vector3 currentHit))
@@ -110,6 +113,9 @@ namespace ARRoomTransformer
             if (!isSetupMode || cornerPoints.Count >= 4) return;
             
             Vector2 screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
+#if UNITY_EDITOR
+            if (Mouse.current != null) screenCenter = Mouse.current.position.ReadValue();
+#endif
             
             if (TryGetHit(screenCenter, out Vector3 hitPoint))
             {

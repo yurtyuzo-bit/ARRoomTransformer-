@@ -539,6 +539,28 @@ namespace ARRoomTransformer
                 }
             }
 
+            // 3) Unity Editor Sanal Zemin (Fallback)
+#if UNITY_EDITOR
+            if (!hasHit && _arCamera != null)
+            {
+                Ray ray = _arCamera.ScreenPointToRay(screenPos);
+                Plane floorPlane = new Plane(Vector3.up, Vector3.zero);
+                if (floorPlane.Raycast(ray, out float enter))
+                {
+                    hitPosition = ray.GetPoint(enter);
+                }
+                else
+                {
+                    // Ufka bakıyorsa zorla 3 metre ileriye koy
+                    hitPosition = _arCamera.transform.position + _arCamera.transform.forward * 3f;
+                    hitPosition.y = 0;
+                }
+                hitNormal = Vector3.up;
+                planeId = default;
+                hasHit = true;
+            }
+#endif
+
             return hasHit;
         }
 
