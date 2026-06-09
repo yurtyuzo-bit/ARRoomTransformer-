@@ -250,13 +250,13 @@ namespace ARRoomTransformer
             floorObj.AddComponent<MeshFilter>().mesh = floorMesh;
             floorObj.AddComponent<MeshRenderer>().material = boundaryMaterial;
 
-            // 2. DUVARLAR (4 Köşeden gökyüzüne uzanan perdeler - Dışarıyı gizler)
+            // 2. DUVARLAR (Çok uzaktaki ufuk çizgisinden gökyüzüne uzanan perdeler)
             float wallHeight = 500f;
             Vector3[] wallVertices = new Vector3[8];
             for (int i = 0; i < 4; i++)
             {
-                wallVertices[i] = sortedPoints[i]; // Alt kenar
-                wallVertices[i + 4] = sortedPoints[i] + new Vector3(0, wallHeight, 0); // Üst kenar
+                wallVertices[i] = outerPoints[i]; // Alt kenar (Uzak Ufuk)
+                wallVertices[i + 4] = outerPoints[i] + new Vector3(0, wallHeight, 0); // Üst kenar (Uzak Ufuk)
             }
             int[] wallTriangles = new int[]
             {
