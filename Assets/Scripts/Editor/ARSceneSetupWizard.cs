@@ -2,6 +2,8 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine.SceneManagement;
+using UnityEngine.Rendering;
+
 
 namespace ARRoomTransformer.Editor
 {
@@ -151,7 +153,8 @@ namespace ARRoomTransformer.Editor
         {
             var sessionGO = new GameObject("AR Session");
             sessionGO.AddComponent<UnityEngine.XR.ARFoundation.ARSession>();
-            sessionGO.AddComponent<UnityEngine.XR.ARFoundation.ARInputManager>();
+            // NOT: ARInputManager, AR Foundation 5.x'te deprecated, 6.x'te kaldırıldı.
+            // Yeni Input System ile entegrasyon otomatik sağlanıyor.
             Debug.Log("  ✓ AR Session oluşturuldu");
         }
 
@@ -324,5 +327,6 @@ namespace ARRoomTransformer.Editor
             tagManager.ApplyModifiedProperties();
             Debug.Log($"  ✓ Tag eklendi: {tag}");
         }
+
     }
 }

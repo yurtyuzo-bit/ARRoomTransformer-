@@ -55,22 +55,27 @@ namespace ARRoomTransformer.Editor
         {
             EnsureDirectories();
 
+            // Temel prefab'lar
             CreatePrefab("Fluorescent_Light", BackroomsModelFactory.CreateFluorescentLight());
             CreatePrefab("Pipe_3m", BackroomsModelFactory.CreatePipe(3f));
+            CreatePrefab("Pipe_2m", BackroomsModelFactory.CreatePipe(2f));      // ← eksikti
+            CreatePrefab("Pipe_1m", BackroomsModelFactory.CreatePipe(1f));      // ← eksikti
             CreatePrefab("DoorFrame", BackroomsModelFactory.CreateDoorFrame());
             CreatePrefab("MetalShelf", BackroomsModelFactory.CreateMetalShelf());
             CreatePrefab("OfficeChair", BackroomsModelFactory.CreateOfficeChair());
             CreatePrefab("Table", BackroomsModelFactory.CreateTable());
             CreatePrefab("CardboardBox_Large", BackroomsModelFactory.CreateCardboardBox(0.5f));
+            CreatePrefab("CardboardBox_Small", BackroomsModelFactory.CreateCardboardBox(0.3f)); // ← eksikti
             CreatePrefab("Barrel", BackroomsModelFactory.CreateBarrel());
             CreatePrefab("ExitSign", BackroomsModelFactory.CreateExitSign());
             CreatePrefab("WaterPuddle", BackroomsModelFactory.CreateWaterPuddle());
+            CreatePrefab("WaterPuddle_Small", BackroomsModelFactory.CreateWaterPuddle(0.25f)); // ← eksikti
             CreatePrefab("Couch", BackroomsModelFactory.CreateCouch());
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            Debug.Log("[BackroomsAssetCreator] 11 prefab oluşturuldu!");
+            Debug.Log("[BackroomsAssetCreator] 15 prefab oluşturuldu!");
         }
 
         [MenuItem("ARRoomTransformer/Sadece AssetCatalog Oluştur", false, 32)]

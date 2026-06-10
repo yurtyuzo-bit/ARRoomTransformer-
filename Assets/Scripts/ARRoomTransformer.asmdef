@@ -7,7 +7,6 @@
         "Unity.XR.CoreUtils",
         "Unity.InputSystem",
         "Unity.TextMeshPro",
-        "Unity.RenderPipelines.Universal.Runtime",
         "Newtonsoft.Json"
     ],
     "includePlatforms": [],
@@ -17,6 +16,12 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.render-pipelines.universal",
+            "expression": "",
+            "define": "UNIVERSAL_RP"
+        }
+    ],
     "noEngineReferences": false
 }

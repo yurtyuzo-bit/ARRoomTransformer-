@@ -17,129 +17,54 @@ Shader "ARRoomTransformer/BackroomsCeiling"
 
     SubShader
     {
-        Tags
+        Tags { "RenderType"="Opaque" }
+        LOD 200
+
+        CGPROGRAM
+        #pragma surface surf Standard fullforwardshadows
+        #pragma target 3.0
+
+        sampler2D _MainTex;
+        sampler2D _DirtTex;
+
+        struct Input
         {
-            "RenderType" = "Opaque"
-            "RenderPipeline" = "UniversalPipeline"
-            "Queue" = "Geometry"
-        }
+            float2 uv_MainTex;
+        };
 
-        Pass
+        fixed4 _BaseColor;
+        fixed4 _GridColor;
+        float4 _GridTiling;
+        half _GridWidth;
+        half _DirtAmount;
+        half _Metallic;
+        half _Smoothness;
+        fixed4 _EmissionColor;
+        half _EmissionStrength;
+
+        void surf (Input IN, inout SurfaceOutputStandard o)
         {
-            Name "ForwardLit"
-            Tags { "LightMode" = "UniversalForward" }
+            float2 gridUV = IN.uv_MainTex * _GridTiling.xy;
+            fixed4 c = tex2D(_MainTex, gridUV) * _BaseColor;
 
-            HLSLPROGRAM
-            #pragma vertex vert
-            #pragma fragment frag
-            #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE
-            #pragma multi_compile _ _ADDITIONAL_LIGHTS
-            #pragma multi_compile_fog
+            // Grid
+            float2 gridFrac = frac(gridUV);
+            float gridLine = step(gridFrac.x, _GridWidth) + step(1.0 - _GridWidth, gridFrac.x)
+                           + step(gridFrac.y, _GridWidth) + step(1.0 - _GridWidth, gridFrac.y);
+            gridLine = saturate(gridLine);
+            c.rgb = lerp(c.rgb, _GridColor.rgb, gridLine);
 
-            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
+            // Dirt
+            half dirt = tex2D(_DirtTex, IN.uv_MainTex * 2.0).r;
+            c.rgb = lerp(c.rgb, c.rgb * 0.7, dirt * _DirtAmount);
 
-            struct Attributes
-            {
-                float4 positionOS : POSITION;
-                float3 normalOS : NORMAL;
-                float2 uv : TEXCOORD0;
-            };
-
-            struct Varyings
-            {
-                float4 positionCS : SV_POSITION;
-                float2 uv : TEXCOORD0;
-                float3 normalWS : TEXCOORD1;
-                float3 positionWS : TEXCOORD2;
-                float fogFactor : TEXCOORD3;
-            };
-
-            TEXTURE2D(_MainTex);    SAMPLER(sampler_MainTex);
-            TEXTURE2D(_DirtTex);    SAMPLER(sampler_DirtTex);
-
-            CBUFFER_START(UnityPerMaterial)
-                float4 _BaseColor;
-                float4 _GridColor;
-                float _GridWidth;
-                float4 _GridTiling;
-                float _DirtAmount;
-                float _Metallic;
-                float _Smoothness;
-                float4 _EmissionColor;
-                float _EmissionStrength;
-                float4 _MainTex_ST;
-                float4 _DirtTex_ST;
-            CBUFFER_END
-
-            Varyings vert(Attributes input)
-            {
-                Varyings output;
-                VertexPositionInputs vertexInput = GetVertexPositionInputs(input.positionOS.xyz);
-                output.positionCS = vertexInput.positionCS;
-                output.positionWS = vertexInput.positionWS;
-                output.normalWS = TransformObjectToWorldNormal(input.normalOS);
-                output.uv = input.uv;
-                output.fogFactor = ComputeFogFactor(vertexInput.positionCS.z);
-                return output;
-            }
-
-            half4 frag(Varyings input) : SV_Target
-            {
-                float2 gridUV = input.uv * _GridTiling.xy;
-
-                // Tavan paneli base rengi
-                half4 ceilingColor = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, gridUV) * _BaseColor;
-
-                // Panel grid çizgileri
-                float2 gridFrac = frac(gridUV);
-                float gridLine = step(gridFrac.x, _GridWidth) + step(1.0 - _GridWidth, gridFrac.x)
-                               + step(gridFrac.y, _GridWidth) + step(1.0 - _GridWidth, gridFrac.y);
-                gridLine = saturate(gridLine);
-                ceilingColor.rgb = lerp(ceilingColor.rgb, _GridColor.rgb, gridLine);
-
-                // Kir efekti
-                half dirt = SAMPLE_TEXTURE2D(_DirtTex, sampler_DirtTex, input.uv * 2.0).r;
-                ceilingColor.rgb = lerp(ceilingColor.rgb, ceilingColor.rgb * 0.7, dirt * _DirtAmount);
-
-                // Lighting
-                InputData lightingInput = (InputData)0;
-                lightingInput.positionWS = input.positionWS;
-                lightingInput.normalWS = normalize(input.normalWS);
-                lightingInput.viewDirectionWS = GetWorldSpaceNormalizeViewDir(input.positionWS);
-
-                SurfaceData surfaceData = (SurfaceData)0;
-                surfaceData.albedo = ceilingColor.rgb;
-                surfaceData.metallic = _Metallic;
-                surfaceData.smoothness = _Smoothness;
-                surfaceData.normalTS = float3(0, 0, 1);
-                surfaceData.occlusion = 1.0;
-                surfaceData.emission = _EmissionColor.rgb * _EmissionStrength * (1.0 - gridLine);
-                surfaceData.alpha = 1.0;
-
-                half4 color = UniversalFragmentPBR(lightingInput, surfaceData);
-                color.rgb = MixFog(color.rgb, input.fogFactor);
-
-                return color;
-            }
-            ENDHLSL
+            o.Albedo = c.rgb;
+            o.Metallic = _Metallic;
+            o.Smoothness = _Smoothness;
+            o.Emission = _EmissionColor.rgb * _EmissionStrength * (1.0 - gridLine);
+            o.Alpha = 1.0;
         }
-
-        Pass
-        {
-            Name "ShadowCaster"
-            Tags { "LightMode" = "ShadowCaster" }
-            ZWrite On
-            ZTest LEqual
-            ColorMask 0
-
-            HLSLPROGRAM
-            #pragma vertex ShadowPassVertex
-            #pragma fragment ShadowPassFragment
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/ShadowCasterPass.hlsl"
-            ENDHLSL
-        }
+        ENDCG
     }
-
-    FallBack "Universal Render Pipeline/Lit"
+    FallBack "Diffuse"
 }

@@ -280,7 +280,7 @@ namespace ARRoomTransformer
 
         private void ToggleMenu()
         {
-            if (appManager.CurrentState != AppManager.AppState.Placing)
+            if (appManager.CurrentState != AppState.Placing)
             {
                 ShowPrompt("Menüyü açmak için önce odayı tarayıp (4 köşe) sınırları belirleyin!", 3f);
                 return;
@@ -357,7 +357,7 @@ namespace ARRoomTransformer
             if (appManager != null && crosshairObj != null)
             {
                 // İmleç sadece Scanning (Odayı Tara / Sınır Seçme) modunda aktif olur
-                crosshairObj.SetActive(appManager.CurrentState == AppManager.AppState.Scanning);
+                crosshairObj.SetActive(appManager.CurrentState == AppState.Scanning);
             }
         }
 

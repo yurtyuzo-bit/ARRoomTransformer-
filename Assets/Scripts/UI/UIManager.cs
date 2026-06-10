@@ -6,25 +6,7 @@ using UnityEngine.Events;
 
 namespace ARRoomTransformer
 {
-    /// <summary>
-    /// Uygulama durumlarını (state) tanımlar.
-    /// Her durum, UI'da farklı bir panel grubuna karşılık gelir.
-    /// </summary>
-    public enum AppState
-    {
-        /// <summary>Ana menü durumu.</summary>
-        MainMenu,
-        /// <summary>Oda tarama durumu.</summary>
-        RoomScanning,
-        /// <summary>Varlık yerleştirme durumu.</summary>
-        AssetPlacement,
-        /// <summary>Video kayıt durumu.</summary>
-        Recording,
-        /// <summary>Sahne yükleme/listeleme durumu.</summary>
-        SceneLoading,
-        /// <summary>Ayarlar durumu.</summary>
-        Settings
-    }
+    // AppState enum'u artık Assets/Scripts/Core/AppState.cs dosyasında merkezi olarak tanımlı.
 
     /// <summary>
     /// Tüm UI panellerini yönetir.

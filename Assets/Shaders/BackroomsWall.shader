@@ -10,132 +10,65 @@ Shader "ARRoomTransformer/BackroomsWall"
         _DamageAmount ("Hasar/Yıpranma", Range(0, 1)) = 0.3
         _DampColor ("Nem Rengi", Color) = (0.6, 0.55, 0.35, 1.0)
         _DampAmount ("Nem Miktarı", Range(0, 1)) = 0.2
-        _DampHeight ("Nem Yüksekliği", Range(0, 1)) = 0.3
+        _DampHeight ("Nem Yüksekliği", Range(0, 5)) = 0.3 // world space height
         _Metallic ("Metalik", Range(0, 1)) = 0.0
         _Smoothness ("Pürüzsüzlük", Range(0, 1)) = 0.15
     }
 
     SubShader
     {
-        Tags
+        Tags { "RenderType"="Opaque" }
+        LOD 200
+
+        CGPROGRAM
+        // Physically based Standard lighting model, and enable shadows on all light types
+        #pragma surface surf Standard fullforwardshadows
+
+        // Use shader model 3.0 target, to get nicer looking lighting
+        #pragma target 3.0
+
+        sampler2D _MainTex;
+        sampler2D _NoiseTex;
+
+        struct Input
         {
-            "RenderType" = "Opaque"
-            "RenderPipeline" = "UniversalPipeline"
-            "Queue" = "Geometry"
-        }
+            float2 uv_MainTex;
+            float3 worldPos;
+        };
 
-        Pass
+        fixed4 _BaseColor;
+        fixed4 _DampColor;
+        float4 _WallpaperTiling;
+        half _NoiseStrength;
+        half _DamageAmount;
+        half _DampAmount;
+        half _DampHeight;
+        half _Metallic;
+        half _Smoothness;
+
+        void surf (Input IN, inout SurfaceOutputStandard o)
         {
-            Name "ForwardLit"
-            Tags { "LightMode" = "UniversalForward" }
+            // Apply tiling to MainTex UV
+            float2 tiledUV = IN.uv_MainTex * _WallpaperTiling.xy;
 
-            HLSLPROGRAM
-            #pragma vertex vert
-            #pragma fragment frag
-            #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE
-            #pragma multi_compile _ _ADDITIONAL_LIGHTS
-            #pragma multi_compile_fog
+            // Base color
+            fixed4 c = tex2D(_MainTex, tiledUV) * _BaseColor;
 
-            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
+            // Noise for damage/dirt
+            fixed noise = tex2D(_NoiseTex, IN.uv_MainTex * 3.0).r;
+            c.rgb = lerp(c.rgb, c.rgb * (1.0 - _DamageAmount), noise * _NoiseStrength);
 
-            struct Attributes
-            {
-                float4 positionOS : POSITION;
-                float3 normalOS : NORMAL;
-                float2 uv : TEXCOORD0;
-            };
+            // Dampness at the bottom (worldPos.y)
+            // saturate restricts to 0..1
+            float heightFactor = saturate(1.0 - (IN.worldPos.y / max(_DampHeight, 0.001)));
+            c.rgb = lerp(c.rgb, _DampColor.rgb, heightFactor * _DampAmount);
 
-            struct Varyings
-            {
-                float4 positionCS : SV_POSITION;
-                float2 uv : TEXCOORD0;
-                float3 normalWS : TEXCOORD1;
-                float3 positionWS : TEXCOORD2;
-                float fogFactor : TEXCOORD3;
-            };
-
-            TEXTURE2D(_MainTex);    SAMPLER(sampler_MainTex);
-            TEXTURE2D(_NoiseTex);   SAMPLER(sampler_NoiseTex);
-
-            CBUFFER_START(UnityPerMaterial)
-                float4 _BaseColor;
-                float4 _WallpaperTiling;
-                float _NoiseStrength;
-                float _DamageAmount;
-                float4 _DampColor;
-                float _DampAmount;
-                float _DampHeight;
-                float _Metallic;
-                float _Smoothness;
-                float4 _MainTex_ST;
-                float4 _NoiseTex_ST;
-            CBUFFER_END
-
-            Varyings vert(Attributes input)
-            {
-                Varyings output;
-                VertexPositionInputs vertexInput = GetVertexPositionInputs(input.positionOS.xyz);
-                output.positionCS = vertexInput.positionCS;
-                output.positionWS = vertexInput.positionWS;
-                output.normalWS = TransformObjectToWorldNormal(input.normalOS);
-                output.uv = input.uv * _WallpaperTiling.xy;
-                output.fogFactor = ComputeFogFactor(vertexInput.positionCS.z);
-                return output;
-            }
-
-            half4 frag(Varyings input) : SV_Target
-            {
-                // Temel duvar kağıdı rengi
-                half4 wallColor = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv) * _BaseColor;
-
-                // Gürültü (kirlilik/yıpranma efekti)
-                half noise = SAMPLE_TEXTURE2D(_NoiseTex, sampler_NoiseTex, input.uv * 3.0).r;
-                wallColor.rgb = lerp(wallColor.rgb, wallColor.rgb * (1.0 - _DamageAmount), noise * _NoiseStrength);
-
-                // Alt kısımda nem efekti
-                float heightFactor = saturate(1.0 - (input.positionWS.y / _DampHeight));
-                wallColor.rgb = lerp(wallColor.rgb, _DampColor.rgb, heightFactor * _DampAmount);
-
-                // Basit lighting
-                InputData lightingInput = (InputData)0;
-                lightingInput.positionWS = input.positionWS;
-                lightingInput.normalWS = normalize(input.normalWS);
-                lightingInput.viewDirectionWS = GetWorldSpaceNormalizeViewDir(input.positionWS);
-
-                SurfaceData surfaceData = (SurfaceData)0;
-                surfaceData.albedo = wallColor.rgb;
-                surfaceData.metallic = _Metallic;
-                surfaceData.smoothness = _Smoothness;
-                surfaceData.normalTS = float3(0, 0, 1);
-                surfaceData.occlusion = 1.0;
-                surfaceData.alpha = 1.0;
-
-                half4 color = UniversalFragmentPBR(lightingInput, surfaceData);
-                color.rgb = MixFog(color.rgb, input.fogFactor);
-
-                return color;
-            }
-            ENDHLSL
+            o.Albedo = c.rgb;
+            o.Metallic = _Metallic;
+            o.Smoothness = _Smoothness;
+            o.Alpha = 1.0;
         }
-
-        // Shadow caster pass
-        Pass
-        {
-            Name "ShadowCaster"
-            Tags { "LightMode" = "ShadowCaster" }
-
-            ZWrite On
-            ZTest LEqual
-            ColorMask 0
-
-            HLSLPROGRAM
-            #pragma vertex ShadowPassVertex
-            #pragma fragment ShadowPassFragment
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/ShadowCasterPass.hlsl"
-            ENDHLSL
-        }
+        ENDCG
     }
-
-    FallBack "Universal Render Pipeline/Lit"
+    FallBack "Diffuse"
 }

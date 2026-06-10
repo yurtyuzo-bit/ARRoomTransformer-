@@ -27,7 +27,7 @@ MonoBehaviour:
     - ceiling
     - floresan
     defaultScale: 1
-    uniqueId: 9e023bb7f9c743d18e0962b9ad500dd2
+    uniqueId: 52883f06db1a4413b8bcc63193685b66
   - assetId: pipe_3m
     displayName: Boru (3m)
     description: "3 metre uzunlu\u011Funda metal boru."
@@ -39,31 +39,31 @@ MonoBehaviour:
     - pipe
     - industrial
     defaultScale: 1
-    uniqueId: e1b2cce9fe42427cacc60118ce3f512c
+    uniqueId: 6e93f96a3c9f4db1a78b625a4bec58ca
   - assetId: pipe_2m
     displayName: Boru (2m)
     description: "2 metre uzunlu\u011Funda metal boru."
     thumbnail: {fileID: 0}
-    prefab: {fileID: 0}
+    prefab: {fileID: 8494911003740906611, guid: 655dd9d71f1327742a854da3a2bc253c, type: 3}
     category: 3
     tags:
     - backrooms
     - pipe
     - industrial
     defaultScale: 1
-    uniqueId: 5a3e26cc255444e39683a9d0a62e6f3e
+    uniqueId: 7d83a1e618aa45ff926c491adad7d2ef
   - assetId: pipe_1m
     displayName: Boru (1m)
     description: "1 metre uzunlu\u011Funda metal boru."
     thumbnail: {fileID: 0}
-    prefab: {fileID: 0}
+    prefab: {fileID: 4450107080342890539, guid: 8afd2219de0095d459ad9bef575fd85a, type: 3}
     category: 3
     tags:
     - backrooms
     - pipe
     - industrial
     defaultScale: 1
-    uniqueId: de9ae58cd3074360b7713e3dccea0f47
+    uniqueId: 26ddfc17a9904a3caf2f642771633f4a
   - assetId: door_frame
     displayName: "Kap\u0131 \xC7er\xE7evesi"
     description: "Karanl\u0131k bir ge\xE7i\u015Fe a\xE7\u0131lan bo\u015F kap\u0131
@@ -77,7 +77,7 @@ MonoBehaviour:
     - frame
     - exit
     defaultScale: 1
-    uniqueId: ad64840b134043269ead404bd1bea6e0
+    uniqueId: 9b9e02ebfb9449c387e5311f64416faf
   - assetId: exit_sign
     displayName: "EXIT Tabelas\u0131"
     description: "K\u0131rm\u0131z\u0131 LED EXIT \xE7\u0131k\u0131\u015F tabelas\u0131."
@@ -90,7 +90,7 @@ MonoBehaviour:
     - exit
     - emergency
     defaultScale: 1
-    uniqueId: c18e2be1daa9408a80a2f10504dcd64a
+    uniqueId: bc625ad64256417b85c0c0e076c09d49
   - assetId: metal_shelf
     displayName: Metal Raf
     description: "4 katl\u0131 end\xFCstriyel metal depo raf\u0131."
@@ -103,7 +103,7 @@ MonoBehaviour:
     - storage
     - metal
     defaultScale: 1
-    uniqueId: 81521803d7154eec99c8cb4079d8743d
+    uniqueId: b7b992dc1dc34c1da7a49e05afe8973f
   - assetId: office_chair
     displayName: Ofis Sandalyesi
     description: Tekerlekli ofis sandalyesi.
@@ -116,7 +116,7 @@ MonoBehaviour:
     - office
     - seat
     defaultScale: 1
-    uniqueId: 5991f453e6b744b7b1407390b4ce1859
+    uniqueId: 9424928c31a3499e8be1986ae9bf1fdb
   - assetId: table
     displayName: Masa
     description: "Ah\u015Fap masa."
@@ -129,7 +129,7 @@ MonoBehaviour:
     - desk
     - furniture
     defaultScale: 1
-    uniqueId: af745aebff784d8b8b609e44d70eb299
+    uniqueId: 12373009c8fa47da85a064fbe5832fbd
   - assetId: couch
     displayName: Koltuk
     description: "Eski tip kuma\u015F koltuk."
@@ -142,7 +142,7 @@ MonoBehaviour:
     - sofa
     - seat
     defaultScale: 1
-    uniqueId: b40d2f8df0db471b889030a51bfea9ea
+    uniqueId: 35b833a6af284549918051f0553394cc
   - assetId: box_large
     displayName: "Karton Kutu (B\xFCy\xFCk)"
     description: "B\xFCy\xFCk karton kargo kutusu."
@@ -155,19 +155,19 @@ MonoBehaviour:
     - cardboard
     - storage
     defaultScale: 1
-    uniqueId: eaaf0ada198c4d3689baf124fab946c8
+    uniqueId: 044e322b16c8489f8f189f481e10773c
   - assetId: box_small
     displayName: "Karton Kutu (K\xFC\xE7\xFCk)"
     description: "K\xFC\xE7\xFCk karton kutu."
     thumbnail: {fileID: 0}
-    prefab: {fileID: 0}
+    prefab: {fileID: 8806551520685445778, guid: d43b312f70acedc49a2dcd785cc4c518, type: 3}
     category: 2
     tags:
     - backrooms
     - box
     - cardboard
     defaultScale: 1
-    uniqueId: 956c53c03a3a4937819b9baf11f8da99
+    uniqueId: 2c62491261874c1e95ef9fc6a4a19fc2
   - assetId: barrel
     displayName: Metal Varil
     description: "Ye\u015Fil metal varil/bidon."
@@ -180,7 +180,7 @@ MonoBehaviour:
     - industrial
     - container
     defaultScale: 1
-    uniqueId: bbf1bc5fbafa4479a8124a45aa9d8c10
+    uniqueId: da82862d5cbd4827a465c3a53f6ad815
   - assetId: puddle_large
     displayName: "Su Birikintisi (B\xFCy\xFCk)"
     description: "Zeminde b\xFCy\xFCk su birikintisi."
@@ -193,16 +193,16 @@ MonoBehaviour:
     - puddle
     - floor
     defaultScale: 1
-    uniqueId: d5839d04026d4b7f822dd291bdda7573
+    uniqueId: 8627db71c888478fbebcabadade247f8
   - assetId: puddle_small
     displayName: "Su Birikintisi (K\xFC\xE7\xFCk)"
     description: "Zeminde k\xFC\xE7\xFCk su birikintisi."
     thumbnail: {fileID: 0}
-    prefab: {fileID: 0}
+    prefab: {fileID: 6671891054883189569, guid: 41ccd9b6a77d570468d580e640f90609, type: 3}
     category: 2
     tags:
     - backrooms
     - water
     - puddle
     defaultScale: 1
-    uniqueId: 4d24daa7d96a4d908b7c71dbbeb75e0f
+    uniqueId: 6899b88fbcd44d32bed4709ba36254c2

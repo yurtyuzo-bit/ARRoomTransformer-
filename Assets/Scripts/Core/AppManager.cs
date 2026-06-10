@@ -38,27 +38,8 @@ namespace ARRoomTransformer
 
         #endregion
 
-        #region Enums
-
-        /// <summary>
-        /// Uygulama durum makinesi durumları.
-        /// </summary>
-        public enum AppState
-        {
-            /// <summary>Uygulama boşta, hiçbir işlem yapılmıyor.</summary>
-            Idle = 0,
-
-            /// <summary>Oda taranıyor, AR düzlemleri algılanıyor.</summary>
-            Scanning = 1,
-
-            /// <summary>Köşe noktaları yerleştiriliyor, oda sınırları belirleniyor.</summary>
-            Placing = 2,
-
-            /// <summary>Oda geometrisi oluşturuldu, kayıt/render aşaması.</summary>
-            Recording = 3
-        }
-
-        #endregion
+        // AppState enum'u artık Assets/Scripts/Core/AppState.cs dosyasında tanımlı.
+        // Bu sınıf o enum'u doğrudan kullanır.
 
         #region Serialized Fields
 
@@ -277,18 +258,25 @@ namespace ARRoomTransformer
         /// <returns><c>true</c> if the transition is valid.</returns>
         public static bool IsValidTransition(AppState from, AppState to)
         {
-            // Idle'a dönüş her zaman geçerli
+            // Idle/MainMenu'ya dönüş her zaman geçerli
             if (to == AppState.Idle)
                 return true;
 
             return (from, to) switch
             {
-                (AppState.Idle, AppState.Scanning) => true,
-                (AppState.Scanning, AppState.Placing) => true,
-                (AppState.Placing, AppState.Recording) => true,
-                // Geri adım atma (isteğe bağlı olarak izin ver)
-                (AppState.Placing, AppState.Scanning) => true,
-                (AppState.Recording, AppState.Placing) => true,
+                // Ana akış
+                (AppState.Idle,      AppState.Scanning)     => true,
+                (AppState.Scanning,  AppState.Placing)      => true,
+                (AppState.Placing,   AppState.Recording)    => true,
+                // Geri adım
+                (AppState.Placing,   AppState.Scanning)     => true,
+                (AppState.Recording, AppState.Placing)      => true,
+                // UIManager genişletilmiş durumlar (Idle'dan erişim)
+                (AppState.Idle,      AppState.SceneLoading) => true,
+                (AppState.Idle,      AppState.Settings)     => true,
+                // Ayarlardan/Sahne yüklemeden geri
+                (AppState.SceneLoading, AppState.Idle)      => true,
+                (AppState.Settings,     AppState.Idle)      => true,
                 _ => false
             };
         }

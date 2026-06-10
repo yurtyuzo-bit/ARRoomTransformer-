@@ -15,122 +15,49 @@ Shader "ARRoomTransformer/BackroomsFloor"
 
     SubShader
     {
-        Tags
+        Tags { "RenderType"="Opaque" }
+        LOD 200
+
+        CGPROGRAM
+        #pragma surface surf Standard fullforwardshadows
+        #pragma target 3.0
+
+        sampler2D _MainTex;
+        sampler2D _NoiseTex;
+
+        struct Input
         {
-            "RenderType" = "Opaque"
-            "RenderPipeline" = "UniversalPipeline"
-            "Queue" = "Geometry"
-        }
+            float2 uv_MainTex;
+        };
 
-        Pass
+        fixed4 _BaseColor;
+        fixed4 _StainColor;
+        float4 _CarpetTiling;
+        half _StainStrength;
+        half _WearAmount;
+        half _Metallic;
+        half _Smoothness;
+
+        void surf (Input IN, inout SurfaceOutputStandard o)
         {
-            Name "ForwardLit"
-            Tags { "LightMode" = "UniversalForward" }
+            float2 tiledUV = IN.uv_MainTex * _CarpetTiling.xy;
+            fixed4 c = tex2D(_MainTex, tiledUV) * _BaseColor;
 
-            HLSLPROGRAM
-            #pragma vertex vert
-            #pragma fragment frag
-            #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE
-            #pragma multi_compile _ _ADDITIONAL_LIGHTS
-            #pragma multi_compile_fog
+            // Stain
+            half stainNoise = tex2D(_NoiseTex, IN.uv_MainTex * 1.5).r;
+            half stainMask = smoothstep(0.5 - _StainStrength, 0.5 + _StainStrength, stainNoise);
+            c.rgb = lerp(c.rgb, _StainColor.rgb, stainMask * _StainStrength);
 
-            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
+            // Wear
+            half wearNoise = tex2D(_NoiseTex, IN.uv_MainTex * 0.7).g;
+            c.rgb = lerp(c.rgb, c.rgb * 1.15, wearNoise * _WearAmount);
 
-            struct Attributes
-            {
-                float4 positionOS : POSITION;
-                float3 normalOS : NORMAL;
-                float2 uv : TEXCOORD0;
-            };
-
-            struct Varyings
-            {
-                float4 positionCS : SV_POSITION;
-                float2 uv : TEXCOORD0;
-                float3 normalWS : TEXCOORD1;
-                float3 positionWS : TEXCOORD2;
-                float fogFactor : TEXCOORD3;
-            };
-
-            TEXTURE2D(_MainTex);    SAMPLER(sampler_MainTex);
-            TEXTURE2D(_NoiseTex);   SAMPLER(sampler_NoiseTex);
-
-            CBUFFER_START(UnityPerMaterial)
-                float4 _BaseColor;
-                float4 _StainColor;
-                float _StainStrength;
-                float4 _CarpetTiling;
-                float _WearAmount;
-                float _Metallic;
-                float _Smoothness;
-                float4 _MainTex_ST;
-                float4 _NoiseTex_ST;
-            CBUFFER_END
-
-            Varyings vert(Attributes input)
-            {
-                Varyings output;
-                VertexPositionInputs vertexInput = GetVertexPositionInputs(input.positionOS.xyz);
-                output.positionCS = vertexInput.positionCS;
-                output.positionWS = vertexInput.positionWS;
-                output.normalWS = TransformObjectToWorldNormal(input.normalOS);
-                output.uv = input.uv * _CarpetTiling.xy;
-                output.fogFactor = ComputeFogFactor(vertexInput.positionCS.z);
-                return output;
-            }
-
-            half4 frag(Varyings input) : SV_Target
-            {
-                // Halı base rengi
-                half4 carpetColor = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv) * _BaseColor;
-
-                // Leke efekti
-                half stainNoise = SAMPLE_TEXTURE2D(_NoiseTex, sampler_NoiseTex, input.uv * 1.5).r;
-                half stainMask = smoothstep(0.5 - _StainStrength, 0.5 + _StainStrength, stainNoise);
-                carpetColor.rgb = lerp(carpetColor.rgb, _StainColor.rgb, stainMask * _StainStrength);
-
-                // Yıpranma — hafif renk solması
-                half wearNoise = SAMPLE_TEXTURE2D(_NoiseTex, sampler_NoiseTex, input.uv * 0.7).g;
-                carpetColor.rgb = lerp(carpetColor.rgb, carpetColor.rgb * 1.15, wearNoise * _WearAmount);
-
-                // Lighting
-                InputData lightingInput = (InputData)0;
-                lightingInput.positionWS = input.positionWS;
-                lightingInput.normalWS = normalize(input.normalWS);
-                lightingInput.viewDirectionWS = GetWorldSpaceNormalizeViewDir(input.positionWS);
-
-                SurfaceData surfaceData = (SurfaceData)0;
-                surfaceData.albedo = carpetColor.rgb;
-                surfaceData.metallic = _Metallic;
-                surfaceData.smoothness = _Smoothness;
-                surfaceData.normalTS = float3(0, 0, 1);
-                surfaceData.occlusion = 1.0;
-                surfaceData.alpha = 1.0;
-
-                half4 color = UniversalFragmentPBR(lightingInput, surfaceData);
-                color.rgb = MixFog(color.rgb, input.fogFactor);
-
-                return color;
-            }
-            ENDHLSL
+            o.Albedo = c.rgb;
+            o.Metallic = _Metallic;
+            o.Smoothness = _Smoothness;
+            o.Alpha = 1.0;
         }
-
-        Pass
-        {
-            Name "ShadowCaster"
-            Tags { "LightMode" = "ShadowCaster" }
-            ZWrite On
-            ZTest LEqual
-            ColorMask 0
-
-            HLSLPROGRAM
-            #pragma vertex ShadowPassVertex
-            #pragma fragment ShadowPassFragment
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/ShadowCasterPass.hlsl"
-            ENDHLSL
-        }
+        ENDCG
     }
-
-    FallBack "Universal Render Pipeline/Lit"
+    FallBack "Diffuse"
 }
