@@ -327,7 +327,7 @@ namespace ARRoomTransformer
                 var matManager = FindAnyObjectByType<MaterialManager>();
                 if (matManager != null && matManager.CurrentTheme != null)
                 {
-                    wallGen.ApplyMaterialToAllWalls(matManager.CurrentTheme.WallMaterial);
+                    wallGen.ApplyMaterialToAllWalls(matManager.CurrentTheme.wallMaterial);
                 }
             }
 
@@ -339,8 +339,8 @@ namespace ARRoomTransformer
                 var matManager = FindAnyObjectByType<MaterialManager>();
                 if (matManager != null && matManager.CurrentTheme != null)
                 {
-                    floorMat = matManager.CurrentTheme.FloorMaterial;
-                    ceilingMat = matManager.CurrentTheme.CeilingMaterial;
+                    floorMat = matManager.CurrentTheme.floorMaterial;
+                    ceilingMat = matManager.CurrentTheme.ceilingMaterial;
                 }
                 floorGen.GenerateFloorPlan(cornerPoints, 2.7f, floorMat, ceilingMat);
             }
