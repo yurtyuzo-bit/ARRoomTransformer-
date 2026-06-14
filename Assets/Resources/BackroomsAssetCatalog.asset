@@ -1,0 +1,208 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d3ab29f8b0116549933e65dc1b19916, type: 3}
+  m_Name: BackroomsAssetCatalog
+  m_EditorClassIdentifier: ARRoomTransformer::ARRoomTransformer.AssetCatalog
+  catalogName: New Catalog
+  description: 
+  entries:
+  - assetId: fluorescent_light
+    displayName: Floresan Lamba
+    description: "Klasik Backrooms floresan tavan lambas\u0131. Titreme efekti dahil."
+    thumbnail: {fileID: 0}
+    prefab: {fileID: 6263550977920696122, guid: dbf7d391fd1a3894ea85b818ea152405, type: 3}
+    category: 4
+    tags:
+    - backrooms
+    - light
+    - ceiling
+    - floresan
+    defaultScale: 1
+    uniqueId: 52883f06db1a4413b8bcc63193685b66
+  - assetId: pipe_3m
+    displayName: Boru (3m)
+    description: "3 metre uzunlu\u011Funda metal boru."
+    thumbnail: {fileID: 0}
+    prefab: {fileID: 6417854445340163805, guid: faf43e4d6cd059e419bdcf08ea068995, type: 3}
+    category: 3
+    tags:
+    - backrooms
+    - pipe
+    - industrial
+    defaultScale: 1
+    uniqueId: 6e93f96a3c9f4db1a78b625a4bec58ca
+  - assetId: pipe_2m
+    displayName: Boru (2m)
+    description: "2 metre uzunlu\u011Funda metal boru."
+    thumbnail: {fileID: 0}
+    prefab: {fileID: 8494911003740906611, guid: 655dd9d71f1327742a854da3a2bc253c, type: 3}
+    category: 3
+    tags:
+    - backrooms
+    - pipe
+    - industrial
+    defaultScale: 1
+    uniqueId: 7d83a1e618aa45ff926c491adad7d2ef
+  - assetId: pipe_1m
+    displayName: Boru (1m)
+    description: "1 metre uzunlu\u011Funda metal boru."
+    thumbnail: {fileID: 0}
+    prefab: {fileID: 4450107080342890539, guid: 8afd2219de0095d459ad9bef575fd85a, type: 3}
+    category: 3
+    tags:
+    - backrooms
+    - pipe
+    - industrial
+    defaultScale: 1
+    uniqueId: 26ddfc17a9904a3caf2f642771633f4a
+  - assetId: door_frame
+    displayName: "Kap\u0131 \xC7er\xE7evesi"
+    description: "Karanl\u0131k bir ge\xE7i\u015Fe a\xE7\u0131lan bo\u015F kap\u0131
+      \xE7er\xE7evesi."
+    thumbnail: {fileID: 0}
+    prefab: {fileID: 8168476706508930978, guid: 52176ccdb45248243882639304915de6, type: 3}
+    category: 3
+    tags:
+    - backrooms
+    - door
+    - frame
+    - exit
+    defaultScale: 1
+    uniqueId: 9b9e02ebfb9449c387e5311f64416faf
+  - assetId: exit_sign
+    displayName: "EXIT Tabelas\u0131"
+    description: "K\u0131rm\u0131z\u0131 LED EXIT \xE7\u0131k\u0131\u015F tabelas\u0131."
+    thumbnail: {fileID: 0}
+    prefab: {fileID: 4721968837249271283, guid: ee3955fb0c4708f43868c3ff36e14c50, type: 3}
+    category: 3
+    tags:
+    - backrooms
+    - sign
+    - exit
+    - emergency
+    defaultScale: 1
+    uniqueId: bc625ad64256417b85c0c0e076c09d49
+  - assetId: metal_shelf
+    displayName: Metal Raf
+    description: "4 katl\u0131 end\xFCstriyel metal depo raf\u0131."
+    thumbnail: {fileID: 0}
+    prefab: {fileID: 2228434604573750986, guid: ee8d3d78ef3f15d47b531ea3c2d59d72, type: 3}
+    category: 1
+    tags:
+    - backrooms
+    - shelf
+    - storage
+    - metal
+    defaultScale: 1
+    uniqueId: b7b992dc1dc34c1da7a49e05afe8973f
+  - assetId: office_chair
+    displayName: Ofis Sandalyesi
+    description: Tekerlekli ofis sandalyesi.
+    thumbnail: {fileID: 0}
+    prefab: {fileID: 125390370591908499, guid: fcf4723a461f0584999cbb389a348581, type: 3}
+    category: 1
+    tags:
+    - backrooms
+    - chair
+    - office
+    - seat
+    defaultScale: 1
+    uniqueId: 9424928c31a3499e8be1986ae9bf1fdb
+  - assetId: table
+    displayName: Masa
+    description: "Ah\u015Fap masa."
+    thumbnail: {fileID: 0}
+    prefab: {fileID: 6278018289413193832, guid: bf3d3827931372044aa4aa958b17470b, type: 3}
+    category: 1
+    tags:
+    - backrooms
+    - table
+    - desk
+    - furniture
+    defaultScale: 1
+    uniqueId: 12373009c8fa47da85a064fbe5832fbd
+  - assetId: couch
+    displayName: Koltuk
+    description: "Eski tip kuma\u015F koltuk."
+    thumbnail: {fileID: 0}
+    prefab: {fileID: 5944321672110476347, guid: 296c472cbe0b530418bc9153fcd5cdf7, type: 3}
+    category: 1
+    tags:
+    - backrooms
+    - couch
+    - sofa
+    - seat
+    defaultScale: 1
+    uniqueId: 35b833a6af284549918051f0553394cc
+  - assetId: box_large
+    displayName: "Karton Kutu (B\xFCy\xFCk)"
+    description: "B\xFCy\xFCk karton kargo kutusu."
+    thumbnail: {fileID: 0}
+    prefab: {fileID: 9064646651053040407, guid: 3acae55a1d491d84d972695f4f7c8b60, type: 3}
+    category: 2
+    tags:
+    - backrooms
+    - box
+    - cardboard
+    - storage
+    defaultScale: 1
+    uniqueId: 044e322b16c8489f8f189f481e10773c
+  - assetId: box_small
+    displayName: "Karton Kutu (K\xFC\xE7\xFCk)"
+    description: "K\xFC\xE7\xFCk karton kutu."
+    thumbnail: {fileID: 0}
+    prefab: {fileID: 8806551520685445778, guid: d43b312f70acedc49a2dcd785cc4c518, type: 3}
+    category: 2
+    tags:
+    - backrooms
+    - box
+    - cardboard
+    defaultScale: 1
+    uniqueId: 2c62491261874c1e95ef9fc6a4a19fc2
+  - assetId: barrel
+    displayName: Metal Varil
+    description: "Ye\u015Fil metal varil/bidon."
+    thumbnail: {fileID: 0}
+    prefab: {fileID: 4646129304090496722, guid: 81a0c14709a0b79408134fea3bf39618, type: 3}
+    category: 2
+    tags:
+    - backrooms
+    - barrel
+    - industrial
+    - container
+    defaultScale: 1
+    uniqueId: da82862d5cbd4827a465c3a53f6ad815
+  - assetId: puddle_large
+    displayName: "Su Birikintisi (B\xFCy\xFCk)"
+    description: "Zeminde b\xFCy\xFCk su birikintisi."
+    thumbnail: {fileID: 0}
+    prefab: {fileID: 1297551932201080236, guid: c685326752e870c4a902068b6e7832bc, type: 3}
+    category: 2
+    tags:
+    - backrooms
+    - water
+    - puddle
+    - floor
+    defaultScale: 1
+    uniqueId: 8627db71c888478fbebcabadade247f8
+  - assetId: puddle_small
+    displayName: "Su Birikintisi (K\xFC\xE7\xFCk)"
+    description: "Zeminde k\xFC\xE7\xFCk su birikintisi."
+    thumbnail: {fileID: 0}
+    prefab: {fileID: 6671891054883189569, guid: 41ccd9b6a77d570468d580e640f90609, type: 3}
+    category: 2
+    tags:
+    - backrooms
+    - water
+    - puddle
+    defaultScale: 1
+    uniqueId: 6899b88fbcd44d32bed4709ba36254c2

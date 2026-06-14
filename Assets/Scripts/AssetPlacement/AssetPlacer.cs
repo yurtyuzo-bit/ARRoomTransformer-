@@ -59,7 +59,7 @@ namespace ARRoomTransformer
     /// Requires <see cref="ARRaycastManager"/> on the same GameObject (typically the
     /// XR Origin). Uses Enhanced Touch API for input handling.
     /// </remarks>
-    [RequireComponent(typeof(ARRaycastManager))]
+    // [RequireComponent(typeof(ARRaycastManager))] // Kaldırıldı, XR Origin üzerinde olmak zorunda değil
     public class AssetPlacer : MonoBehaviour
     {
         #region Serialized Fields
@@ -181,7 +181,7 @@ namespace ARRoomTransformer
 
         private void Awake()
         {
-            _arRaycastManager = GetComponent<ARRaycastManager>();
+            _arRaycastManager = FindAnyObjectByType<ARRaycastManager>();
         }
 
         private void OnEnable()
@@ -209,6 +209,16 @@ namespace ARRoomTransformer
             if (_arCamera == null)
             {
                 Debug.LogError("[AssetPlacer] Ana kamera bulunamadı! AR Camera'nın MainCamera olarak etiketlendiğinden emin olun.");
+            }
+
+            // Katalog null ise Resources'dan otomatik yükle
+            if (catalog == null)
+            {
+                catalog = Resources.Load<AssetCatalog>("BackroomsAssetCatalog");
+                if (catalog != null)
+                    Debug.Log($"[AssetPlacer] Katalog otomatik yüklendi: {catalog.CatalogName} ({catalog.Count} öğe)");
+                else
+                    Debug.LogWarning("[AssetPlacer] Resources/BackroomsAssetCatalog bulunamadı!");
             }
         }
 
@@ -276,6 +286,9 @@ namespace ARRoomTransformer
             GameObject instance = Instantiate(entry.prefab, position, rotation);
             instance.SetActive(true); // Dummy nesneler gizli olduğu için kopyayı görünür yap
             instance.name = $"Placed_{entry.displayName}_{_placedAssets.Count}";
+
+            // Null materyalleri düzelt (prefab'larda materyal gömülü olmayabilir)
+            FixNullMaterials(instance);
 
             // Apply default scale
             float scale = Mathf.Max(entry.defaultScale, 0.01f);
@@ -636,6 +649,77 @@ namespace ARRoomTransformer
             {
                 // Vertical surface (wall) — align up with world up, forward along surface normal
                 return Quaternion.LookRotation(surfaceNormal, Vector3.up);
+            }
+        }
+
+        /// <summary>
+        /// Prefab'daki null materyalleri varsayılan bir materyal ile değiştirir.
+        /// Prosedürel oluşturulan prefab'larda materyaller kaydedilmemiş olabilir.
+        /// </summary>
+        private void FixNullMaterials(GameObject instance)
+        {
+            Shader shader = Shader.Find("Standard");
+            if (shader == null) return;
+
+            var renderers = instance.GetComponentsInChildren<Renderer>(true);
+            foreach (var renderer in renderers)
+            {
+                var mats = renderer.sharedMaterials;
+                bool needsFix = false;
+                for (int i = 0; i < mats.Length; i++)
+                {
+                    if (mats[i] == null)
+                    {
+                        needsFix = true;
+                        break;
+                    }
+                }
+                if (needsFix)
+                {
+                    var newMats = new Material[mats.Length];
+                    for (int i = 0; i < mats.Length; i++)
+                    {
+                        if (mats[i] == null)
+                        {
+                            var mat = new Material(shader);
+                            mat.name = $"Auto_{renderer.gameObject.name}";
+                            // Obje isminden renk tahmin et
+                            string lowerName = instance.name.ToLowerInvariant();
+                            if (lowerName.Contains("light") || lowerName.Contains("lamba"))
+                                mat.color = new Color(0.95f, 0.95f, 0.85f);
+                            else if (lowerName.Contains("pipe") || lowerName.Contains("boru") || lowerName.Contains("barrel") || lowerName.Contains("varil") || lowerName.Contains("shelf") || lowerName.Contains("raf"))
+                                mat.color = new Color(0.5f, 0.5f, 0.55f); // Metal gri
+                            else if (lowerName.Contains("chair") || lowerName.Contains("sandalye") || lowerName.Contains("couch") || lowerName.Contains("koltuk"))
+                                mat.color = new Color(0.25f, 0.25f, 0.3f); // Koyu kumaş
+                            else if (lowerName.Contains("table") || lowerName.Contains("masa") || lowerName.Contains("door") || lowerName.Contains("kapı"))
+                                mat.color = new Color(0.55f, 0.35f, 0.15f); // Ahşap
+                            else if (lowerName.Contains("box") || lowerName.Contains("kutu"))
+                                mat.color = new Color(0.65f, 0.5f, 0.3f); // Karton
+                            else if (lowerName.Contains("puddle") || lowerName.Contains("su"))
+                            {
+                                mat.color = new Color(0.3f, 0.4f, 0.5f, 0.7f);
+                                mat.SetFloat("_Mode", 3); // Transparent
+                                mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+                                mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                                mat.SetInt("_ZWrite", 0);
+                                mat.DisableKeyword("_ALPHATEST_ON");
+                                mat.EnableKeyword("_ALPHABLEND_ON");
+                                mat.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+                                mat.renderQueue = 3000;
+                            }
+                            else if (lowerName.Contains("exit") || lowerName.Contains("sign"))
+                                mat.color = new Color(0.9f, 0.1f, 0.1f); // Kırmızı tabela
+                            else
+                                mat.color = new Color(0.6f, 0.6f, 0.6f); // Varsayılan gri
+                            newMats[i] = mat;
+                        }
+                        else
+                        {
+                            newMats[i] = mats[i];
+                        }
+                    }
+                    renderer.materials = newMats;
+                }
             }
         }
 

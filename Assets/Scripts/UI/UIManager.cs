@@ -149,6 +149,14 @@ namespace ARRoomTransformer
 
         private void Start()
         {
+            // DynamicUIManager varsa bu eski sistemi devre dışı bırak
+            if (FindAnyObjectByType<DynamicUIManager>() != null)
+            {
+                Debug.Log("[UIManager] DynamicUIManager tespit edildi, eski UIManager devre dışı bırakılıyor.");
+                enabled = false;
+                return;
+            }
+
             // Başlangıçta tüm panelleri gizle, sadece ana menüyü göster
             SetAllPanelsHidden();
             ShowPanelImmediate(_currentState);

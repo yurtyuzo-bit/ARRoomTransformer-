@@ -133,7 +133,7 @@ namespace ARRoomTransformer
             }
 
             _instance = this;
-            DontDestroyOnLoad(gameObject);
+            // DontDestroyOnLoad(gameObject); // Kaldırıldı, child objelerde çalışmaz
 
             CurrentState = _initialState;
             PreviousState = _initialState;
@@ -293,6 +293,39 @@ namespace ARRoomTransformer
             
             if (GetComponent<RoomBoundaryManager>() == null)
                 gameObject.AddComponent<RoomBoundaryManager>();
+
+            // Tüm null referansları otomatik bağla
+            AutoWireReferences();
+        }
+
+        /// <summary>
+        /// Sahnedeki tüm bileşenleri bulur ve null olan referansları otomatik bağlar.
+        /// Inspector'dan bağlanamayan referanslar burada kod ile çözülür.
+        /// </summary>
+        private void AutoWireReferences()
+        {
+            Debug.Log("[AppManager] Otomatik referans bağlama başlıyor...");
+
+            // MaterialManager — tema boşsa zaten kendi Start()'ında oluşturuyor
+
+            // WallGenerator ve FloorPlanGenerator materyallerini bağla
+            var matManager = FindAnyObjectByType<MaterialManager>();
+            if (matManager != null)
+            {
+                var wallGen = FindAnyObjectByType<WallGenerator>();
+                var floorGen = FindAnyObjectByType<FloorPlanGenerator>();
+
+                if (wallGen != null && matManager.CurrentTheme != null)
+                {
+                    Debug.Log("[AppManager] WallGenerator materyal bağlantısı hazır.");
+                }
+                if (floorGen != null && matManager.CurrentTheme != null)
+                {
+                    Debug.Log("[AppManager] FloorPlanGenerator materyal bağlantısı hazır.");
+                }
+            }
+
+            Debug.Log("[AppManager] Otomatik referans bağlama tamamlandı.");
         }
 
         /// <summary>

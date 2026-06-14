@@ -159,6 +159,12 @@ namespace ARRoomTransformer
                     }
                     stringRenderer.SetPosition(4, cornerPoints[0] + Vector3.up * 0.02f); 
 
+                    var detector = FindAnyObjectByType<RoomBoundaryDetector>();
+                    if (detector != null)
+                    {
+                        detector.CalculateBoundary(cornerPoints);
+                    }
+
                     GenerateBoundaryMesh();
                     isSetupMode = false;
                     
@@ -312,6 +318,32 @@ namespace ARRoomTransformer
             ceilingObj.AddComponent<MeshRenderer>().material = boundaryMaterial;
 
             Debug.Log("[RoomBoundaryManager] 3 Boyutlu Okyanus Maskesi oluşturuldu!");
+
+            // Asıl duvar ve zeminleri oluştur
+            var wallGen = FindAnyObjectByType<WallGenerator>();
+            if (wallGen != null) 
+            {
+                wallGen.GenerateWalls(cornerPoints);
+                var matManager = FindAnyObjectByType<MaterialManager>();
+                if (matManager != null && matManager.CurrentTheme != null)
+                {
+                    wallGen.ApplyMaterialToAllWalls(matManager.CurrentTheme.WallMaterial);
+                }
+            }
+
+            var floorGen = FindAnyObjectByType<FloorPlanGenerator>();
+            if (floorGen != null) 
+            {
+                Material floorMat = null;
+                Material ceilingMat = null;
+                var matManager = FindAnyObjectByType<MaterialManager>();
+                if (matManager != null && matManager.CurrentTheme != null)
+                {
+                    floorMat = matManager.CurrentTheme.FloorMaterial;
+                    ceilingMat = matManager.CurrentTheme.CeilingMaterial;
+                }
+                floorGen.GenerateFloorPlan(cornerPoints, 2.7f, floorMat, ceilingMat);
+            }
         }
     }
 }
